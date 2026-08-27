@@ -483,6 +483,75 @@
   }
   function uid() { return "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
+  /* ---------- roulement pré-rempli ---------- */
+
+  /* Roulement de deux semaines entre deux personnes, qui couvre tous les
+     jours de l'année : semaine A = lundi, mardi, vendredi, samedi, dimanche ;
+     semaine B = mercredi, jeudi ; les deux s'échangent chaque semaine.
+     Axelle commence en semaine A, ce qui la place au travail le 1er janvier
+     2027 (un vendredi). Appliqué une seule fois, puis conservé dans l'état
+     partagé : chacune reste libre de modifier ses jours ensuite. */
+  var SEED = {
+    id: "roulement-2027",
+    year: 2027,
+    anchorDay: Math.floor(Date.UTC(2026, 11, 28) / 86400000), // lundi de la semaine du 1er janvier 2027
+    weekA: [0, 1, 4, 5, 6], // 0 = lundi
+    nurses: [
+      { name: "Axelle", color: "#0E6E66", phase: 0 },
+      { name: "Collègue", color: "#B85C38", phase: 1 }
+    ],
+    work: "J",
+    rest: "R"
+  };
+
+  function applySeed() {
+    state.seeds = state.seeds || [];
+    if (state.seeds.indexOf(SEED.id) >= 0) return false;
+    var ids = SEED.nurses.map(function (s) {
+      var found = null;
+      for (var i = 0; i < state.team.length; i++) {
+        if (state.team[i].name.trim().toLowerCase() === s.name.toLowerCase()) { found = state.team[i]; break; }
+      }
+      if (!found) {
+        found = { id: uid(), name: s.name, color: s.color };
+        state.team.push(found);
+      }
+      if (!state.entries[found.id]) state.entries[found.id] = {};
+      return found.id;
+    });
+    for (var m = 0; m < 12; m++) {
+      var nd = daysInMonth(SEED.year, m);
+      for (var d = 1; d <= nd; d++) {
+        var dstr = fmt(SEED.year, m, d);
+        var week = Math.floor((Math.floor(Date.UTC(SEED.year, m, d) / 86400000) - SEED.anchorDay) / 7);
+        var inA = SEED.weekA.indexOf((new Date(SEED.year, m, d).getDay() + 6) % 7) >= 0;
+        for (var i = 0; i < SEED.nurses.length; i++) {
+          var weekIsA = ((week + SEED.nurses[i].phase) % 2) === 0;
+          state.entries[ids[i]][dstr] = (weekIsA ? inA : !inA) ? SEED.work : SEED.rest;
+        }
+      }
+    }
+    state.seeds.push(SEED.id);
+    return true;
+  }
+
+  function yearHasEntries(y) {
+    var ids = Object.keys(state.entries);
+    for (var i = 0; i < ids.length; i++) {
+      var ds = Object.keys(state.entries[ids[i]]);
+      for (var j = 0; j < ds.length; j++) if (ds[j].indexOf(y + "-") === 0) return true;
+    }
+    return false;
+  }
+
+  /* Ouvrir directement sur une année qui contient un planning. */
+  function pickInitialYear() {
+    if (yearHasEntries(curYear)) return;
+    if (!yearHasEntries(SEED.year)) return;
+    curYear = SEED.year;
+    if (curYear !== now.getFullYear()) curMonth = 0;
+  }
+
   var toastTimer = null;
   function toast(msg) {
     var t = document.getElementById("toast");
@@ -891,12 +960,13 @@
     });
   }
 
-  function adoptServer(row) {
+  function adoptServer(row, initial) {
     supa.rev = row.rev || 0;
     if (row.data && typeof row.data === "object") state = row.data;
     normalizeState();
+    var seeded = applySeed();
     if (me && !state.team.some(function (n) { return n.id === me; })) { me = null; lsSet("releve.me", ""); }
-    if (applyPendingToState()) {
+    if (applyPendingToState() || seeded) {
       dirty = true;
       scheduleAutosave();
     } else {
@@ -904,6 +974,7 @@
       ssDel(PENDING_KEY);
       dirty = false;
     }
+    if (initial) pickInitialYear();
     renderAll();
   }
 
@@ -919,7 +990,7 @@
   function supaInit() {
     supaReq("GET", "?id=eq." + supa.docId + "&select=rev,data")
       .then(function (rows) {
-        if (rows.length) { adoptServer(rows[0]); return; }
+        if (rows.length) { adoptServer(rows[0], true); return; }
         // Première ouverture : on crée le document partagé de l'équipe.
         return supaReq("POST", "", { id: supa.docId, rev: 0, data: state })
           .then(function (created) { if (created.length) supa.rev = created[0].rev || 0; })
@@ -1075,10 +1146,14 @@
     renderTeam();
     updateSaveStatus();
   }
+  var seededNow = applySeed();
+  if (seededNow) dirty = true;
+  pickInitialYear();
   renderAll();
   if (supa) supaInit();
   if (dirty) {
     if (supa) scheduleAutosave();
+    else if (seededNow) toast("Roulement " + SEED.year + " pré-rempli : cliquez sur Enregistrer pour le partager.");
     else toast("Modifications précédentes réappliquées : pensez à enregistrer.");
   }
 })();

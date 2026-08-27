@@ -17,6 +17,24 @@ dans la page elle-même.
   Ascension, Pentecôte) et signalés dans la grille.
 - **Gestion d'équipe** : ajout, renommage, couleur et retrait des membres.
 
+## Roulement pré-rempli 2027
+
+L'année 2027 est pré-remplie avec un roulement de deux semaines entre deux
+personnes, qui couvre tous les jours de l'année :
+
+| Semaine | Personne en semaine A | Personne en semaine B |
+| --- | --- | --- |
+| A | lundi, mardi, vendredi, samedi, dimanche | mercredi, jeudi |
+
+Les deux s'échangent les rôles chaque semaine. Axelle démarre en semaine A,
+ce qui la place au travail le vendredi 1er janvier 2027 ; sur l'année cela
+donne 183 jours travaillés pour elle et 182 pour sa collègue, avec exactement
+une infirmière présente chaque jour.
+
+Le roulement est appliqué une seule fois (marqueur `seeds` dans l'état
+partagé), puis chacune reste libre de modifier ses jours ; il ne se
+réapplique jamais par-dessus les modifications de l'équipe.
+
 ## Mode collaboratif
 
 Deux hébergements possibles, avec synchronisation d'équipe dans les deux cas :
