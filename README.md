@@ -22,7 +22,7 @@ dans la page elle-même.
 
 | Vue | Contenu | Navigation ‹ › |
 | --- | --- | --- |
-| **Année** | Une infirmière à la fois, 12 mois en lignes × 31 jours, en aplats de couleur. Cliquer un nom de mois l'ouvre en vue mois. | Année |
+| **Année** | Une infirmière à la fois, 12 calendriers mensuels (lundi → dimanche) avec un trait de couleur sous chaque jour. Cliquer un nom de mois l'ouvre en vue mois. | Année |
 | **Mois** | Toute l'équipe. Sur grand écran, infirmières en lignes et jours en colonnes ; sur téléphone, l'inverse. | Mois |
 | **Semaine** | Les 7 jours en toutes lettres, statuts écrits en clair. | Semaine |
 
@@ -48,8 +48,7 @@ En dessous de 760 px, la grille bascule : les **jours deviennent les lignes** et
 les **infirmières les colonnes**, ce qui supprime tout défilement horizontal.
 L'en-tête de page et celui du tableau restent collés en haut, la barre des mois
 et les puces de statut défilent horizontalement, et les cibles tactiles font
-au moins 42 px. La vue année tient dans la largeur de l'écran (un numéro de
-jour sur cinq est affiché). On peint au **tap** (et non au contact) pour qu'un simple
+au moins 42 px. La vue année passe à deux calendriers par ligne. On peint au **tap** (et non au contact) pour qu'un simple
 défilement ne marque jamais un jour par erreur.
 
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données

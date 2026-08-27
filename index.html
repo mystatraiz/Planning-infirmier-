@@ -39,7 +39,7 @@
     --s-RAT-ring: #C9682F;
     --s-RB-bg:  #D3DAF7; --s-RB-ink:  #333F91;
 
-    --s-T-solid: #4FA791; --s-R-solid: #DDE4E2;
+    --s-T-solid: #4FA791; --s-R-solid: #B7C3C0;
     --s-RAT-solid: #D9762F; --s-RB-solid: #7C88D8;
 
     --shadow: 0 1px 2px rgba(27, 42, 40, .06), 0 4px 14px rgba(27, 42, 40, .05);
@@ -66,7 +66,7 @@
       --s-RAT-ring: #C97A45;
       --s-RB-bg:  #2A3059; --s-RB-ink:  #B9C1F5;
 
-      --s-T-solid: #3E8F7C; --s-R-solid: #38423F;
+      --s-T-solid: #3E8F7C; --s-R-solid: #566360;
       --s-RAT-solid: #C4712F; --s-RB-solid: #5D69B8;
 
       --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
@@ -93,7 +93,7 @@
     --s-RAT-ring: #C97A45;
     --s-RB-bg:  #2A3059; --s-RB-ink:  #B9C1F5;
 
-    --s-T-solid: #3E8F7C; --s-R-solid: #38423F;
+    --s-T-solid: #3E8F7C; --s-R-solid: #566360;
     --s-RAT-solid: #C4712F; --s-RB-solid: #5D69B8;
 
     --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
@@ -342,53 +342,76 @@
   table.wgrid tr.today th.wday { color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
   table.wgrid tr:last-child th.wday, table.wgrid tr:last-child td.cell { border-bottom: none; }
 
-  /* ---------- vue année ---------- */
+  /* ---------- vue année : douze calendriers mensuels ---------- */
 
   .yearbar {
     display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     padding: 11px 16px; border-bottom: 1px solid var(--line);
   }
   .yearbar .control-label { margin-right: 0; }
-  table.ygrid {
-    border-collapse: separate; border-spacing: 0;
-    width: max-content; min-width: 100%; margin: 4px 0 2px;
+
+  .ycal {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px 24px; padding: 18px 16px 6px;
   }
-  table.ygrid th.ycorner { width: 62px; }
-  table.ygrid thead th {
-    font-size: 9.5px; font-weight: 600; color: var(--muted); text-align: center;
-    padding: 6px 0 4px; font-variant-numeric: tabular-nums; width: 22px;
+  .ymcard { min-width: 0; }
+  .ymtitle {
+    display: block; width: 100%; background: none; border: none;
+    text-align: center; padding: 0 0 8px;
+    font-family: "Bricolage Grotesque", "Figtree", sans-serif;
+    font-size: 15px; font-weight: 600; color: var(--ink);
+    border-radius: 6px;
   }
-  table.ygrid th.ymonth {
-    text-align: left; padding: 0 8px 0 16px; font-size: 12.5px; font-weight: 600;
-    color: var(--muted); white-space: nowrap; cursor: pointer;
+  .ymtitle:hover { color: var(--accent); }
+  .ymtitle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  table.ycalt { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  table.ycalt thead th {
+    font-size: 10px; font-weight: 600; color: var(--muted);
+    padding-bottom: 5px; text-align: center; font-variant-numeric: tabular-nums;
   }
-  table.ygrid th.ymonth:hover { color: var(--accent); text-decoration: underline; }
-  table.ygrid td.cell {
-    width: 22px; height: 22px; padding: 1px; text-align: center;
+  table.ycalt thead th.wend { color: var(--line-strong); }
+  table.ycalt td {
+    padding: 1px 2px 4px; text-align: center; vertical-align: top;
   }
-  table.ygrid td.cell i {
-    display: block; width: 100%; height: 100%; border-radius: 4px;
-    background: var(--surface-2); font-style: normal;
+  table.ycalt td.cell { cursor: pointer; }
+  table.ycalt td b {
+    display: block; font-size: 12px; font-weight: 500; line-height: 1.5;
+    font-variant-numeric: tabular-nums;
   }
-  table.ygrid td.cell.we i { background: var(--weekend); }
-  table.ygrid td.cell i.s-T   { background: var(--s-T-solid); }
-  table.ygrid td.cell i.s-R   { background: var(--s-R-solid); }
-  table.ygrid td.cell i.s-RAT { background: var(--s-RAT-solid); }
-  table.ygrid td.cell i.s-RB  { background: var(--s-RB-solid); }
-  table.ygrid td.cell.empty { cursor: default; }
-  table.ygrid td.cell.empty i { background: transparent; }
-  table.ygrid td.cell.today i { box-shadow: 0 0 0 2px var(--accent); }
-  table.ygrid td.cell:hover i { outline: 2px solid var(--accent); outline-offset: 1px; }
+  table.ycalt td i {
+    display: block; height: 3px; border-radius: 2px; margin-top: 1px;
+    background: transparent; font-style: normal;
+  }
+  table.ycalt td.out { cursor: default; }
+  table.ycalt td.out b { color: var(--line-strong); font-weight: 400; }
+  table.ycalt td.out i { opacity: .3; }
+  table.ycalt td.hol b { color: var(--danger); }
+  table.ycalt td.today b {
+    color: var(--accent-ink); background: var(--accent); font-weight: 700;
+    border-radius: 50%; width: 19px; height: 19px; line-height: 19px; margin: 0 auto;
+  }
+  table.ycalt td.cell:hover b { color: var(--accent); }
+  table.ycalt td.cell:focus-visible { outline: 2px solid var(--accent); outline-offset: -1px; border-radius: 4px; }
+  table.ycalt td i.s-T   { background: var(--s-T-solid); }
+  table.ycalt td i.s-R   { background: var(--s-R-solid); }
+  table.ycalt td i.s-RAT { background: var(--s-RAT-solid); }
+  table.ycalt td i.s-RB  { background: var(--s-RB-solid); }
+
   .ylegend {
-    display: flex; gap: 14px; flex-wrap: wrap; padding: 6px 16px 12px;
+    display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 16px 14px;
     font-size: 12px; color: var(--muted);
   }
-  .ylegend span { display: inline-flex; align-items: center; gap: 6px; }
-  .ylegend i { width: 13px; height: 13px; border-radius: 4px; display: inline-block; font-style: normal; }
+  .ylegend span { display: inline-flex; align-items: center; gap: 7px; }
+  .ylegend i { width: 16px; height: 3px; border-radius: 2px; display: inline-block; font-style: normal; }
   .ylegend i.s-T   { background: var(--s-T-solid); }
   .ylegend i.s-R   { background: var(--s-R-solid); }
-  .ylegend i.s-RAT { background: var(--s-RAT-solid); box-shadow: none; }
+  .ylegend i.s-RAT { background: var(--s-RAT-solid); }
   .ylegend i.s-RB  { background: var(--s-RB-solid); }
+
+  @media (max-width: 1080px) { .ycal { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (max-width: 820px)  { .ycal { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 330px)  { .ycal { grid-template-columns: minmax(0, 1fr); } }
 
   /* ---------- récapitulatifs ---------- */
 
@@ -522,16 +545,13 @@
     table.wgrid td.cell { height: 56px; }
     table.wgrid td.cell span { min-width: 64px; height: 34px; font-size: 12.5px; }
 
-    /* L'année entière doit tenir sur la largeur du téléphone. */
     .yearbar { padding: 10px 14px; }
-    table.ygrid { width: 100%; min-width: 0; }
-    table.ygrid th.ycorner { width: 44px; }
-    table.ygrid thead th { width: 11px; font-size: 8.5px; padding: 4px 0 3px; }
-    table.ygrid th.ymonth { padding: 0 4px 0 8px; font-size: 11.5px; }
-    table.ygrid td.cell { width: 11px; height: 16px; padding: 0.5px; }
-    table.ygrid td.cell i { border-radius: 2px; }
-    .ylegend { padding: 8px 14px 12px; gap: 10px; font-size: 11.5px; }
-    .ylegend i { width: 11px; height: 11px; }
+    .ycal { gap: 18px 14px; padding: 14px 12px 4px; }
+    .ymtitle { font-size: 14px; padding-bottom: 6px; }
+    table.ycalt thead th { font-size: 9px; }
+    table.ycalt td b { font-size: 11.5px; }
+    table.ycalt td.today b { width: 18px; height: 18px; line-height: 18px; }
+    .ylegend { padding: 8px 14px 12px; gap: 12px; font-size: 11.5px; }
 
     details.panel {
       border-radius: 0; border-left: none; border-right: none;
@@ -550,9 +570,6 @@
   }
 
   @media (max-width: 380px) {
-    table.ygrid th.ycorner { width: 38px; }
-    table.ygrid thead th, table.ygrid td.cell { width: 10px; }
-    table.ygrid th.ymonth { font-size: 10.5px; padding-left: 6px; }
     table.mgrid th.mday { width: 68px; font-size: 13px; padding-left: 10px; }
     table.mgrid td.cell span { min-width: 32px; }
     table.wgrid th.wday { width: 108px; font-size: 13px; }
@@ -1038,10 +1055,11 @@
   function paintCellContent(td) {
     var code = entryOf(td.dataset.n, td.dataset.d);
     var t = code ? typeById(code) : null;
-    if (td.dataset.mini === "1") {
-      var i = td.firstChild || td.appendChild(el("i"));
-      i.className = t ? "s-" + code : "";
-      i.title = t ? t.label : "";
+    if (td.dataset.cal === "1") {
+      var bar = td.querySelector("i");
+      if (!bar) { bar = el("i"); td.appendChild(bar); }
+      bar.className = t ? "s-" + code : "";
+      td.title = t ? t.label : "";
       return;
     }
     td.textContent = "";
@@ -1216,7 +1234,8 @@
     hint.textContent = "Choisissez un statut puis touchez une case pour l'appliquer sur cette semaine.";
   }
 
-  /* Vue année : une infirmière à la fois, douze mois en lignes. */
+  /* Vue année : douze calendriers mensuels, un trait de couleur sous chaque
+     jour. Une infirmière à la fois, choisie par les onglets. */
   function renderYear(top, scroll, hint) {
     if (!yearWho || !state.team.some(function (n) { return n.id === yearWho; })) {
       yearWho = me || state.team[0].id;
@@ -1235,46 +1254,15 @@
     top.appendChild(bar);
 
     var hols = holidays(curYear);
+    var holsPrev = holidays(curYear - 1);
+    var holsNext = holidays(curYear + 1);
     var today = todayStr();
-    var table = el("table", "ygrid");
-    var thead = el("thead");
-    var hr = el("tr");
-    hr.appendChild(el("th", "ycorner"));
-    var sparse = narrow.matches;
-    for (var d = 1; d <= 31; d++) {
-      hr.appendChild(el("th", null, (!sparse || d === 1 || d % 5 === 0) ? String(d) : ""));
-    }
-    thead.appendChild(hr);
-    table.appendChild(thead);
+    var cal = el("div", "ycal");
 
-    var tbody = el("tbody");
     for (var m = 0; m < 12; m++) {
-      var tr = el("tr");
-      var mth = el("th", "ymonth", MONTHS_SHORT[m]);
-      mth.title = "Ouvrir " + MONTHS[m];
-      (function (m) {
-        mth.addEventListener("click", function () { curMonth = m; setView("month"); });
-      })(m);
-      tr.appendChild(mth);
-      var nd = daysInMonth(curYear, m);
-      for (var d = 1; d <= 31; d++) {
-        if (d > nd) { tr.appendChild(el("td", "cell empty")); continue; }
-        var dstr = fmt(curYear, m, d);
-        var date = new Date(curYear, m, d);
-        var cls = [];
-        if (date.getDay() === 0 || date.getDay() === 6) cls.push("we");
-        if (hols[dstr]) cls.push("hol");
-        if (dstr === today) cls.push("today");
-        var td = makeCell(yearWho, dstr, cls.join(" "));
-        td.dataset.mini = "1";
-        td.textContent = "";
-        paintCellContent(td);
-        tr.appendChild(td);
-      }
-      tbody.appendChild(tr);
+      cal.appendChild(monthCard(m, hols, holsPrev, holsNext, today));
     }
-    table.appendChild(tbody);
-    scroll.appendChild(table);
+    scroll.appendChild(cal);
 
     var legend = el("div", "ylegend");
     TYPES.forEach(function (t) {
@@ -1284,7 +1272,72 @@
       legend.appendChild(s);
     });
     scroll.appendChild(legend);
-    hint.textContent = "Vue d'ensemble de l'année. Touchez une case pour la modifier, ou un nom de mois pour l'ouvrir en détail.";
+    hint.textContent = "Touchez un jour pour le modifier, ou le nom d'un mois pour l'ouvrir en détail.";
+  }
+
+  function dayIndex(date) {
+    return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
+  }
+
+  function monthCard(m, hols, holsPrev, holsNext, today) {
+    var card = el("div", "ymcard");
+    var title = el("button", "ymtitle", MONTHS[m] + " " + curYear);
+    title.title = "Ouvrir " + MONTHS[m] + " en détail";
+    title.addEventListener("click", function () { curMonth = m; setView("month"); });
+    card.appendChild(title);
+
+    var table = el("table", "ycalt");
+    var thead = el("thead");
+    var hr = el("tr");
+    ["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."].forEach(function (d, i) {
+      hr.appendChild(el("th", i >= 5 ? "wend" : null, d));
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    var first = new Date(curYear, m, 1);
+    var last = new Date(curYear, m, daysInMonth(curYear, m));
+    var start = mondayOf(first);
+    var weeks = Math.round((dayIndex(mondayOf(last)) - dayIndex(start)) / 7) + 1;
+
+    var tbody = el("tbody");
+    for (var w = 0; w < weeks; w++) {
+      var tr = el("tr");
+      for (var k = 0; k < 7; k++) {
+        var date = addDays(start, w * 7 + k);
+        var y = date.getFullYear(), mo = date.getMonth(), d = date.getDate();
+        var dstr = fmt(y, mo, d);
+        var inMonth = (mo === m && y === curYear);
+        var holsFor = y < curYear ? holsPrev : (y > curYear ? holsNext : hols);
+        var cls = [];
+        if (!inMonth) cls.push("out");
+        else {
+          cls.push("cell");
+          if (holsFor[dstr]) cls.push("hol");
+          if (dstr === today) cls.push("today");
+        }
+        var td = el("td", cls.join(" "));
+        td.appendChild(el("b", null, String(d)));
+        td.appendChild(el("i"));
+        td.dataset.cal = "1";
+        if (inMonth) {
+          td.dataset.n = yearWho;
+          td.dataset.d = dstr;
+          td.tabIndex = 0;
+        } else {
+          // Les jours du mois voisin restent visibles, en retrait et non modifiables.
+          td.dataset.n = yearWho;
+          td.dataset.d = dstr;
+        }
+        paintCellContent(td);
+        if (!inMonth) { delete td.dataset.n; }
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    card.appendChild(table);
+    return card;
   }
 
   /* ---------- récapitulatifs ---------- */
@@ -1485,7 +1538,7 @@
   var touchTap = false;
   grid.addEventListener("pointerdown", function (e) {
     var td = e.target.closest("td.cell");
-    if (!td || td.classList.contains("empty")) return;
+    if (!td) return;
     if (e.pointerType === "touch") { touchTap = true; return; }
     touchTap = false;
     if (e.button === 2) return;
@@ -1496,17 +1549,17 @@
     if (!touchTap) return;
     touchTap = false;
     var td = e.target.closest("td.cell");
-    if (td && !td.classList.contains("empty")) applyBrush(td);
+    if (td) applyBrush(td);
   });
   grid.addEventListener("pointerover", function (e) {
     if (!painting || !(e.buttons & 1)) return;
     var td = e.target.closest("td.cell");
-    if (td && !td.classList.contains("empty")) applyBrush(td);
+    if (td) applyBrush(td);
   });
   window.addEventListener("pointerup", function () { painting = false; });
   grid.addEventListener("contextmenu", function (e) {
     var td = e.target.closest("td.cell");
-    if (!td || td.classList.contains("empty")) return;
+    if (!td) return;
     e.preventDefault();
     var old = brush;
     brush = "ERASE";
@@ -1515,7 +1568,7 @@
   });
   grid.addEventListener("keydown", function (e) {
     var td = e.target.closest("td.cell");
-    if (!td || td.classList.contains("empty")) return;
+    if (!td) return;
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); applyBrush(td); }
     if (e.key === "Delete" || e.key === "Backspace") {
       e.preventDefault();
