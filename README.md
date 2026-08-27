@@ -95,6 +95,16 @@ occasion.
 Le texte des étiquettes s'adapte automatiquement à la couleur choisie : clair
 sur les couleurs sombres, foncé sur les couleurs vives comme le cyan.
 
+### Noms en double
+
+Les noms sont comparés sans tenir compte de la casse ni des accents :
+« Chloe » et « Chloé » désignent la même personne. Si deux fiches se
+retrouvent malgré tout dans l'équipe (ou dans le carnet de remplaçants),
+elles sont fusionnées automatiquement au chargement : les plannings sont
+réunis et, en cas de désaccord sur une journée, un jour travaillé l'emporte
+sur un repos. Renommer quelqu'un avec un nom déjà pris fusionne les deux
+fiches et l'annonce.
+
 ## Roulement pré-rempli 2027
 
 L'année 2027 est pré-remplie avec un roulement de deux semaines entre deux

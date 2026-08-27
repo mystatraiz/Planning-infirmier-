@@ -1006,12 +1006,67 @@
     ]
   };
 
+  /* Comparaison de noms insensible à la casse ET aux accents :
+     « Chloe » et « Chloé » désignent la même personne. */
+  function normName(v) {
+    var t = String(v || "").trim().toLowerCase();
+    if (t.normalize) t = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return t.replace(/\s+/g, " ");
+  }
+
   function findByName(name) {
-    var want = name.trim().toLowerCase();
+    var want = normName(name);
     for (var i = 0; i < state.team.length; i++) {
-      if (state.team[i].name.trim().toLowerCase() === want) return state.team[i];
+      if (normName(state.team[i].name) === want) return state.team[i];
     }
     return null;
+  }
+
+  /* Fusionne les fiches qui désignent la même personne (orthographe ou accent
+     différents). Sans effet quand il n'y a pas de doublon. */
+  function mergeDuplicateNames() {
+    var changed = false;
+
+    var seen = {}, keep = [];
+    state.team.forEach(function (n) {
+      var k = normName(n.name);
+      if (!seen[k]) { seen[k] = n; keep.push(n); return; }
+      var target = seen[k];
+      var src = state.entries[n.id] || {};
+      if (!state.entries[target.id]) state.entries[target.id] = {};
+      Object.keys(src).forEach(function (d) {
+        var cur = state.entries[target.id][d];
+        // En cas de désaccord, un jour travaillé l'emporte sur un repos.
+        if (!cur || (src[d] === "T" && cur !== "T")) state.entries[target.id][d] = src[d];
+      });
+      delete state.entries[n.id];
+      if (me === n.id) { me = target.id; lsSet("releve.me", me); }
+      if (focusWho === n.id) { focusWho = target.id; lsSet("releve.focus", focusWho); }
+      changed = true;
+    });
+    if (changed) {
+      state.team = keep;
+      // Rendre leur couleur aux personnes du planning de septembre.
+      SEED_SEPT.people.forEach(function (pers) {
+        var m = findByName(pers.name);
+        if (m) m.color = pers.color;
+      });
+    }
+
+    var seenS = {}, keepS = [];
+    state.subs.forEach(function (sb) {
+      var k = normName(sb.name);
+      if (!seenS[k]) { seenS[k] = sb; keepS.push(sb); return; }
+      var target = seenS[k];
+      if (!target.phone && sb.phone) target.phone = sb.phone;
+      Object.keys(state.cover).forEach(function (d) {
+        if (state.cover[d].sub === sb.id) state.cover[d].sub = target.id;
+      });
+      changed = true;
+    });
+    if (keepS.length !== state.subs.length) state.subs = keepS;
+
+    return changed;
   }
 
   function applySeptember2026() {
@@ -1928,11 +1983,15 @@
       input.addEventListener("change", function () {
         var v = input.value.trim();
         if (!v) { input.value = n.name; return; }
+        var clash = state.team.filter(function (x) {
+          return x.id !== n.id && normName(x.name) === normName(v);
+        })[0];
         n.name = v;
+        if (clash && mergeDuplicateNames()) {
+          toast("« " + v + " » existait déjà : les deux plannings ont été fusionnés.");
+        }
         markDirty();
-        renderIdentity();
-        renderGrid();
-        renderSums();
+        renderAll();
       });
       row.appendChild(input);
       var picker = el("div", "colorpick");
@@ -2198,6 +2257,7 @@
     var changed = migrateStatuses();
     if (applySeed()) changed = true;
     if (applySeptember2026()) changed = true;
+    if (mergeDuplicateNames()) changed = true;
     if (me && !state.team.some(function (n) { return n.id === me; })) { me = null; lsSet("releve.me", ""); }
     if (applyPendingToState() || changed) {
       dirty = true;
@@ -2414,6 +2474,7 @@
   var changedAtStart = migrateStatuses();
   if (applySeed()) changedAtStart = true;
   if (applySeptember2026()) changedAtStart = true;
+  if (mergeDuplicateNames()) changedAtStart = true;
   if (changedAtStart) dirty = true;
   pickInitialYear();
   renderAll();
