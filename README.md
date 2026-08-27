@@ -76,7 +76,7 @@ défilement ne marque jamais un jour par erreur.
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
 du planning passent toujours par le réseau, jamais par le cache.
 
-## Plannings repris (septembre et octobre 2026)
+## Plannings repris (septembre à novembre 2026)
 
 Les plannings existants de l'équipe sont repris mois par mois, aux couleurs de
 l'équipe : **Axelle** en rouge `#E5322B`, **Chloé** en cyan `#1FC7C7`, la
@@ -102,6 +102,17 @@ Les 30 journées sont couvertes par exactement une personne.
 
 Les **28 et 29 octobre** ne sont assurés par personne : ils remontent
 automatiquement dans le panneau « Jours sans personne ».
+
+### Novembre 2026
+
+| Personne | Jours travaillés |
+| --- | --- |
+| Axelle | 2, 3, 6, 8, 11, 12, 16, 17, 20, 21, 22, 25, 26, 30 |
+| Chloé | 1, 4, 5, 9, 10, 13, 14, 15, 18, 19, 23, 24, 27, 28, 29 |
+| Remplaçante | 7 |
+
+Les 30 journées sont couvertes. Le 1er novembre portait deux couleurs sur le
+planning d'origine : c'est **Chloé** qui a été retenue.
 
 ### Ajouter un mois
 
