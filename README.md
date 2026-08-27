@@ -6,16 +6,28 @@ dans la page elle-même.
 
 ## Fonctionnalités
 
-- **Planning sur l'année** : navigation par année (‹ ›) et par mois.
+- **Trois vues** commutables : **année**, **mois** et **semaine**, avec une
+  navigation ‹ › adaptée à la période et un bouton « Aujourd'hui ».
 - **Chacune gère ses jours** : sélection de son identité (« Je suis »), puis
-  peinture des jours au clic ou au glisser. Clic droit pour effacer.
-- **7 vacations** : Matin, Soir, Nuit, Journée, Repos, Congés, Formation —
-  chacune avec sa couleur, lisible en thème clair comme sombre.
-- **Récapitulatifs** : par mois et par année — nombre de chaque vacation,
-  jours travaillés, week-ends travaillés (pour l'équité de la répartition).
+  saisie des jours au clic ou au glisser. Clic droit pour effacer.
+- **4 statuts** : Travail, Repos, Rempla à trouver, Rempla booké. « Rempla à
+  trouver » est cerclé d'orange pour repérer les trous à combler.
+- **Récapitulatifs** : sur la période affichée et sur l'année — nombre de jours
+  par statut et week-ends travaillés (pour l'équité de la répartition).
 - **Jours fériés français** calculés automatiquement (fixes + Pâques,
   Ascension, Pentecôte) et signalés dans la grille.
 - **Gestion d'équipe** : ajout, renommage, couleur et retrait des membres.
+
+## Les trois vues
+
+| Vue | Contenu | Navigation ‹ › |
+| --- | --- | --- |
+| **Année** | Une infirmière à la fois, 12 mois en lignes × 31 jours, en aplats de couleur. Cliquer un nom de mois l'ouvre en vue mois. | Année |
+| **Mois** | Toute l'équipe. Sur grand écran, infirmières en lignes et jours en colonnes ; sur téléphone, l'inverse. | Mois |
+| **Semaine** | Les 7 jours en toutes lettres, statuts écrits en clair. | Semaine |
+
+La vue choisie est mémorisée par navigateur. Les flèches ← → du clavier
+changent aussi de période.
 
 ## Application mobile (installable sur iPhone)
 
@@ -35,8 +47,9 @@ avec sa propre icône.
 En dessous de 760 px, la grille bascule : les **jours deviennent les lignes** et
 les **infirmières les colonnes**, ce qui supprime tout défilement horizontal.
 L'en-tête de page et celui du tableau restent collés en haut, la barre des mois
-et les puces de vacation défilent horizontalement, et les cibles tactiles font
-au moins 42 px. On peint au **tap** (et non au contact) pour qu'un simple
+et les puces de statut défilent horizontalement, et les cibles tactiles font
+au moins 42 px. La vue année tient dans la largeur de l'écran (un numéro de
+jour sur cinq est affiché). On peint au **tap** (et non au contact) pour qu'un simple
 défilement ne marque jamais un jour par erreur.
 
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
@@ -59,6 +72,11 @@ une infirmière présente chaque jour.
 Le roulement est appliqué une seule fois (marqueur `seeds` dans l'état
 partagé), puis chacune reste libre de modifier ses jours ; il ne se
 réapplique jamais par-dessus les modifications de l'équipe.
+
+Les plannings créés avec l'ancien jeu de vacations (Matin, Soir, Nuit,
+Journée, Formation, Congés) sont convertis automatiquement et une seule fois
+vers les quatre statuts : tout ce qui était travaillé devient **Travail**, les
+congés deviennent **Repos** (marqueur `statuts-v2`).
 
 ## Mode collaboratif
 
