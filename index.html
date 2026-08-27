@@ -292,6 +292,8 @@
   }
 </style>
 
+<script src="config.js"></script>
+
 <!--RELEVE-STATE-->
 <script type="application/json" id="app-state">{"v":1,"types":[{"id":"M","label":"Matin"},{"id":"S","label":"Soir"},{"id":"N","label":"Nuit"},{"id":"J","label":"Journée"},{"id":"R","label":"Repos"},{"id":"CA","label":"Congés"},{"id":"F","label":"Formation"}],"team":[],"entries":{}}</script>
 <!--/RELEVE-STATE-->
@@ -366,15 +368,18 @@
   try {
     state = JSON.parse(document.getElementById(STATE_EL_ID).textContent);
   } catch (e) { /* état illisible : on repart d'une base vide */ }
-  if (!state.types || !state.types.length) {
-    state.types = [
-      { id: "M", label: "Matin" }, { id: "S", label: "Soir" }, { id: "N", label: "Nuit" },
-      { id: "J", label: "Journée" }, { id: "R", label: "Repos" },
-      { id: "CA", label: "Congés" }, { id: "F", label: "Formation" }
-    ];
+  function normalizeState() {
+    if (!state.types || !state.types.length) {
+      state.types = [
+        { id: "M", label: "Matin" }, { id: "S", label: "Soir" }, { id: "N", label: "Nuit" },
+        { id: "J", label: "Journée" }, { id: "R", label: "Repos" },
+        { id: "CA", label: "Congés" }, { id: "F", label: "Formation" }
+      ];
+    }
+    state.team = state.team || [];
+    state.entries = state.entries || {};
   }
-  state.team = state.team || [];
-  state.entries = state.entries || {};
+  normalizeState();
 
   var WORKED = { M: 1, S: 1, N: 1, J: 1, F: 1 }; // R et CA ne comptent pas comme travaillés
   var NURSE_COLORS = ["#0E6E66", "#B85C38", "#5B6FB5", "#8A5BA0", "#3E7CB1", "#C2803A", "#6E8F4B", "#A64D6D"];
@@ -403,30 +408,34 @@
   me = lsGet("releve.me");
   if (me && !state.team.some(function (n) { return n.id === me; })) me = null;
 
-  /* Modifications en attente : rejouées après un rechargement (conflit ou
-     enregistrement) pour ne jamais perdre ce qui vient d'être peint. */
+  /* Modifications en attente : rejouées après un rechargement ou par-dessus
+     une version plus récente du serveur, pour ne jamais perdre ce qui vient
+     d'être peint. */
   var PENDING_KEY = "releve.pending";
   var pending = {};
-  (function replayPending() {
-    var raw = ssGet(PENDING_KEY);
-    if (!raw) return;
-    var saved;
-    try { saved = JSON.parse(raw); } catch (e) { ssDel(PENDING_KEY); return; }
+
+  function applyPendingToState() {
     var changed = false;
-    Object.keys(saved).forEach(function (key) {
+    Object.keys(pending).forEach(function (key) {
       var parts = key.split("|");
-      var nid = parts[0], date = parts[1], val = saved[key];
+      var nid = parts[0], date = parts[1], val = pending[key];
       if (!state.team.some(function (n) { return n.id === nid; })) return;
       var cur = (state.entries[nid] || {})[date] || null;
       if (cur === val) return;
       if (!state.entries[nid]) state.entries[nid] = {};
       if (val === null) delete state.entries[nid][date];
       else state.entries[nid][date] = val;
-      pending[key] = val;
       changed = true;
     });
-    if (changed) { dirty = true; }
-    else ssDel(PENDING_KEY);
+    return changed;
+  }
+
+  (function restorePending() {
+    var raw = ssGet(PENDING_KEY);
+    if (!raw) return;
+    try { pending = JSON.parse(raw) || {}; } catch (e) { pending = {}; ssDel(PENDING_KEY); return; }
+    if (applyPendingToState()) { dirty = true; }
+    else { pending = {}; ssDel(PENDING_KEY); }
   })();
 
   /* ---------- jours fériés (France métropolitaine) ---------- */
@@ -835,23 +844,145 @@
 
   /* ---------- enregistrement partagé ---------- */
 
+  /* Deux modes de synchronisation :
+     - Supabase (hébergement classique, ex. GitHub Pages) : config.js définit
+       window.RELEVE_CONFIG = { supabaseUrl, supabaseKey } ; enregistrement
+       automatique, sans rechargement, et rafraîchissement périodique.
+     - Artifact claude.ai : la page publie une nouvelle version d'elle-même. */
+
+  var cfg = window.RELEVE_CONFIG || null;
+  var supa = null;
+  if (cfg && cfg.supabaseUrl && cfg.supabaseKey) {
+    supa = {
+      endpoint: String(cfg.supabaseUrl).replace(/\/+$/, "") + "/rest/v1/planning",
+      docId: cfg.docId || "main",
+      rev: 0,
+      headers: {
+        apikey: cfg.supabaseKey,
+        Authorization: "Bearer " + cfg.supabaseKey,
+        "Content-Type": "application/json",
+        Prefer: "return=representation"
+      }
+    };
+  }
+
+  var AUTOSAVE_MS = 2500;
+  var autosaveTimer = null;
+  function scheduleAutosave() {
+    if (!supa || readOnly) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(save, AUTOSAVE_MS);
+  }
+
   function markDirty() {
     dirty = true;
     updateSaveStatus();
+    scheduleAutosave();
+  }
+
+  function supaReq(method, qs, body) {
+    return fetch(supa.endpoint + qs, {
+      method: method,
+      headers: supa.headers,
+      body: body === undefined ? undefined : JSON.stringify(body)
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    });
+  }
+
+  function adoptServer(row) {
+    supa.rev = row.rev || 0;
+    if (row.data && typeof row.data === "object") state = row.data;
+    normalizeState();
+    if (me && !state.team.some(function (n) { return n.id === me; })) { me = null; lsSet("releve.me", ""); }
+    if (applyPendingToState()) {
+      dirty = true;
+      scheduleAutosave();
+    } else {
+      pending = {};
+      ssDel(PENDING_KEY);
+      dirty = false;
+    }
+    renderAll();
+  }
+
+  function supaPoll() {
+    if (!supa || painting || saving) return;
+    supaReq("GET", "?id=eq." + supa.docId + "&select=rev,data")
+      .then(function (rows) {
+        if (rows.length && (rows[0].rev || 0) > supa.rev) adoptServer(rows[0]);
+      })
+      .catch(function () { /* hors ligne : nouvelle tentative au prochain cycle */ });
+  }
+
+  function supaInit() {
+    supaReq("GET", "?id=eq." + supa.docId + "&select=rev,data")
+      .then(function (rows) {
+        if (rows.length) { adoptServer(rows[0]); return; }
+        // Première ouverture : on crée le document partagé de l'équipe.
+        return supaReq("POST", "", { id: supa.docId, rev: 0, data: state })
+          .then(function (created) { if (created.length) supa.rev = created[0].rev || 0; })
+          .catch(function () { /* une collègue l'a créé en même temps */ });
+      })
+      .catch(function () {
+        var b = document.getElementById("banner");
+        b.textContent = "Impossible de joindre la synchronisation pour l'instant : vos modifications restent sur cet appareil et repartiront dès que la connexion revient.";
+        b.classList.add("show");
+      });
+    setInterval(supaPoll, 30000);
+    window.addEventListener("focus", supaPoll);
+  }
+
+  function supaSave(attempt) {
+    supaReq("PATCH", "?id=eq." + supa.docId + "&rev=eq." + supa.rev,
+      { rev: supa.rev + 1, data: state, updated_at: new Date().toISOString() })
+      .then(function (rows) {
+        if (rows.length) {
+          supa.rev = rows[0].rev || (supa.rev + 1);
+          pending = {};
+          ssDel(PENDING_KEY);
+          dirty = false;
+          saving = false;
+          updateSaveStatus();
+          return;
+        }
+        // Quelqu'un a enregistré entre-temps : on reprend sa version,
+        // on rejoue nos modifications par-dessus, puis on réessaie.
+        return supaReq("GET", "?id=eq." + supa.docId + "&select=rev,data")
+          .then(function (rows2) {
+            saving = false;
+            if (rows2.length) adoptServer(rows2[0]);
+            if (dirty && attempt < 3) {
+              saving = true;
+              updateSaveStatus();
+              return supaSave(attempt + 1);
+            }
+            updateSaveStatus();
+          });
+      })
+      .catch(function () {
+        saving = false;
+        updateSaveStatus();
+        toast("Enregistrement impossible : vérifiez la connexion. Nouvel essai automatique.");
+        scheduleAutosave();
+      });
   }
 
   var artifactNS = null;
-  var artifactReady = (window.claude && window.claude.use)
+  var artifactReady = (!supa && window.claude && window.claude.use)
     ? window.claude.use("artifact").then(function (ns) { artifactNS = ns; return ns; })
     : Promise.resolve(null);
 
-  artifactReady.then(function (ns) {
-    if (!ns) {
-      var b = document.getElementById("banner");
-      b.textContent = "Page ouverte hors de claude.ai : les modifications resteront locales et ne seront pas partagées avec l'équipe.";
-      b.classList.add("show");
-    }
-  });
+  if (!supa) {
+    artifactReady.then(function (ns) {
+      if (!ns) {
+        var b = document.getElementById("banner");
+        b.textContent = "Synchronisation non configurée : les modifications restent locales à ce navigateur et ne seront pas partagées avec l'équipe.";
+        b.classList.add("show");
+      }
+    });
+  }
 
   function serializeState() {
     return JSON.stringify(state).replace(/</g, "\\u003c");
@@ -873,6 +1004,7 @@
     if (saving || readOnly || !dirty) return;
     saving = true;
     updateSaveStatus();
+    if (supa) { supaSave(1); return; }
     artifactReady.then(function (ns) {
       if (!ns) {
         saving = false;
@@ -944,8 +1076,10 @@
     updateSaveStatus();
   }
   renderAll();
+  if (supa) supaInit();
   if (dirty) {
-    toast("Modifications précédentes réappliquées : pensez à enregistrer.");
+    if (supa) scheduleAutosave();
+    else toast("Modifications précédentes réappliquées : pensez à enregistrer.");
   }
 })();
 </script>

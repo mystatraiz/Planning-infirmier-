@@ -19,15 +19,40 @@ dans la page elle-même.
 
 ## Mode collaboratif
 
-Publiée comme Artifact Claude avec la capacité `artifact`, la page
-s'enregistre elle-même : le bouton **Enregistrer** publie une nouvelle version
-partagée, et chaque personne ayant le lien (avec droit de modification) voit
-le planning à jour. Les conflits d'enregistrement simultané sont gérés : la
-page se recharge sur la version gagnante et réapplique les modifications
-locales non enregistrées.
+Deux hébergements possibles, avec synchronisation d'équipe dans les deux cas :
 
-Ouverte ailleurs (par exemple via GitHub Pages), la page fonctionne en mode
-local : les modifications ne sont pas partagées.
+### 1. GitHub Pages + Supabase (navigateur normal, sans Claude)
+
+Le dépôt contient un workflow (`.github/workflows/pages.yml`) qui déploie la
+page sur GitHub Pages à chaque push. La synchronisation passe par une petite
+base Supabase (gratuite) :
+
+1. Créer un projet sur [supabase.com](https://supabase.com) (gratuit).
+2. Dans **SQL Editor**, exécuter le contenu de `supabase.sql`.
+3. Dans **Project Settings → API**, copier la *Project URL* et la clé
+   *anon public*.
+4. Les renseigner dans `config.js` (décommenter le bloc), puis pousser.
+
+L'enregistrement est alors automatique (2,5 s après la dernière modification),
+les autres navigateurs se rafraîchissent toutes les 30 s et au retour sur
+l'onglet, et les enregistrements simultanés sont fusionnés (version du serveur
+reprise, modifications locales rejouées par-dessus, nouvel essai).
+
+La clé *anon public* est faite pour être publiée ; l'accès aux données est
+régi par les politiques RLS de `supabase.sql` (toute personne ayant le lien
+peut lire et modifier — même modèle de confiance qu'un tableur partagé).
+
+### 2. Artifact claude.ai
+
+Publiée comme Artifact avec la capacité `artifact`, la page s'enregistre
+elle-même : le bouton **Enregistrer** publie une nouvelle version partagée
+pour toutes les personnes ayant reçu le lien avec droit de modification.
+En cas d'enregistrements simultanés, la page se recharge sur la version
+gagnante et réapplique les modifications locales non enregistrées.
+
+Sans Supabase configuré ni capacité artifact (par exemple fichier ouvert en
+local), la page fonctionne en mode local : les modifications ne sont pas
+partagées.
 
 ## Détails techniques
 
