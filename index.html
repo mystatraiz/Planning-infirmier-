@@ -275,7 +275,7 @@
   table.gcal td { height: 104px; }
   .wtag {
     display: block; border-radius: 6px; padding: 2px 7px; margin-bottom: 3px;
-    font-size: 11.5px; font-weight: 700; color: #FFFFFF;
+    font-size: 11.5px; font-weight: 700;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .wtag.cover { color: inherit; }
@@ -773,7 +773,21 @@
   }
   normalizeState();
 
-  var NURSE_COLORS = ["#0E6E66", "#B85C38", "#5B6FB5", "#8A5BA0", "#3E7CB1", "#C2803A", "#6E8F4B", "#A64D6D"];
+  var NURSE_COLORS = ["#E5322B", "#1FC7C7", "#2FB344", "#0E6E66", "#B85C38",
+                      "#5B6FB5", "#8A5BA0", "#3E7CB1", "#C2803A", "#A64D6D"];
+
+  /* Texte lisible sur une couleur d'infirmière (clair ou foncé selon sa luminance). */
+  function inkOn(hex) {
+    var c = String(hex || "").replace("#", "");
+    if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+    if (c.length !== 6) return "#FFFFFF";
+    function lin(v) {
+      v = parseInt(v, 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    }
+    var L = 0.2126 * lin(c.slice(0, 2)) + 0.7152 * lin(c.slice(2, 4)) + 0.0722 * lin(c.slice(4, 6));
+    return L > 0.42 ? "#10241F" : "#FFFFFF";
+  }
   var MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
     "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
   var MONTHS_SHORT = ["Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin",
@@ -975,6 +989,57 @@
     return true;
   }
 
+  /* Planning de septembre 2026 repris du planning existant de l'équipe :
+     Axelle en rouge, Chloé en cyan, la remplaçante en vert. Chaque journée du
+     mois est couverte par exactement une personne. */
+  var SEED_SEPT = {
+    id: "planning-sept-2026",
+    year: 2026,
+    month: 8,
+    people: [
+      { name: "Axelle", color: "#E5322B", rest: true,
+        days: [1, 3, 7, 8, 11, 13, 16, 17, 21, 22, 25, 26, 27, 30] },
+      { name: "Chloé", color: "#1FC7C7", rest: true,
+        days: [4, 5, 6, 9, 10, 14, 15, 18, 19, 20, 24, 28, 29] },
+      { name: "Remplaçante", color: "#2FB344", rest: false,
+        days: [2, 12, 23] }
+    ]
+  };
+
+  function findByName(name) {
+    var want = name.trim().toLowerCase();
+    for (var i = 0; i < state.team.length; i++) {
+      if (state.team[i].name.trim().toLowerCase() === want) return state.team[i];
+    }
+    return null;
+  }
+
+  function applySeptember2026() {
+    if (state.seeds.indexOf(SEED_SEPT.id) >= 0) return false;
+    // « Collègue » du roulement initial est en fait Chloé.
+    if (!findByName("Chloé")) {
+      var col = findByName("Collègue");
+      if (col) col.name = "Chloé";
+    }
+    var nd = daysInMonth(SEED_SEPT.year, SEED_SEPT.month);
+    SEED_SEPT.people.forEach(function (pers) {
+      var found = findByName(pers.name);
+      if (!found) {
+        found = { id: uid(), name: pers.name, color: pers.color };
+        state.team.push(found);
+      }
+      found.color = pers.color;
+      if (!state.entries[found.id]) state.entries[found.id] = {};
+      for (var d = 1; d <= nd; d++) {
+        var dstr = fmt(SEED_SEPT.year, SEED_SEPT.month, d);
+        if (pers.days.indexOf(d) >= 0) state.entries[found.id][dstr] = "T";
+        else if (pers.rest) state.entries[found.id][dstr] = "R";
+      }
+    });
+    state.seeds.push(SEED_SEPT.id);
+    return true;
+  }
+
   function yearHasEntries(y) {
     var ids = Object.keys(state.entries);
     for (var i = 0; i < ids.length; i++) {
@@ -984,13 +1049,20 @@
     return false;
   }
 
-  /* Ouvrir directement sur une année qui contient un planning. */
+  /* Ouvrir directement sur une période qui contient un planning. */
   function pickInitialYear() {
-    if (yearHasEntries(curYear)) return;
-    if (!yearHasEntries(SEED.year)) return;
-    curYear = SEED.year;
-    curMonth = 0;
-    weekStart = mondayOf(new Date(SEED.year, 0, 1));
+    if (!yearHasEntries(curYear)) {
+      if (!yearHasEntries(SEED.year)) return;
+      curYear = SEED.year;
+      curMonth = 0;
+    }
+    if (monthHasEntries(curYear, curMonth)) return;
+    // Le mois courant est vide : on avance au prochain mois rempli de l'année.
+    for (var i = 1; i <= 12; i++) {
+      var m = (curMonth + i) % 12;
+      if (monthHasEntries(curYear, m)) { curMonth = m; break; }
+    }
+    weekStart = mondayOf(new Date(curYear, curMonth, 1));
   }
 
   /* ---------- rendu : entêtes et contrôles ---------- */
@@ -1274,6 +1346,7 @@
     who.forEach(function (n) {
       var tag = el("div", "wtag");
       tag.style.background = n.color;
+      tag.style.color = inkOn(n.color);
       tag.textContent = n.name;
       tag.title = n.name + " — Travail";
       td.appendChild(tag);
@@ -2124,6 +2197,7 @@
     normalizeState();
     var changed = migrateStatuses();
     if (applySeed()) changed = true;
+    if (applySeptember2026()) changed = true;
     if (me && !state.team.some(function (n) { return n.id === me; })) { me = null; lsSet("releve.me", ""); }
     if (applyPendingToState() || changed) {
       dirty = true;
@@ -2339,6 +2413,7 @@
 
   var changedAtStart = migrateStatuses();
   if (applySeed()) changedAtStart = true;
+  if (applySeptember2026()) changedAtStart = true;
   if (changedAtStart) dirty = true;
   pickInitialYear();
   renderAll();

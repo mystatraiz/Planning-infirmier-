@@ -76,6 +76,25 @@ défilement ne marque jamais un jour par erreur.
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
 du planning passent toujours par le réseau, jamais par le cache.
 
+## Planning de septembre 2026
+
+Le planning de septembre 2026 est repris du planning existant de l'équipe :
+
+| Personne | Couleur | Jours travaillés |
+| --- | --- | --- |
+| Axelle | rouge `#E5322B` | 1, 3, 7, 8, 11, 13, 16, 17, 21, 22, 25, 26, 27, 30 |
+| Chloé | cyan `#1FC7C7` | 4, 5, 6, 9, 10, 14, 15, 18, 19, 20, 24, 28, 29 |
+| Remplaçante | vert `#2FB344` | 2, 12, 23 |
+
+Les 30 journées du mois sont couvertes par exactement une personne. Comme pour
+le roulement, ce planning n'est appliqué qu'une seule fois (marqueur
+`planning-sept-2026`) et n'écrase jamais les modifications de l'équipe.
+« Collègue » (nom provisoire du roulement initial) devient Chloé à cette
+occasion.
+
+Le texte des étiquettes s'adapte automatiquement à la couleur choisie : clair
+sur les couleurs sombres, foncé sur les couleurs vives comme le cyan.
+
 ## Roulement pré-rempli 2027
 
 L'année 2027 est pré-remplie avec un roulement de deux semaines entre deux
