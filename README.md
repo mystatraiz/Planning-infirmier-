@@ -6,9 +6,8 @@ dans la page elle-même.
 
 ## Fonctionnalités
 
-- **Quatre vues** commutables : **général**, **année**, **mois** et
-  **semaine**, avec une navigation ‹ › adaptée à la période et un bouton
-  « Aujourd'hui ».
+- **Trois vues** de période (année, mois, semaine) combinées à un sélecteur
+  **Tous / par infirmière**, avec navigation ‹ › et bouton « Aujourd'hui ».
 - **Chacune gère ses jours** : sélection de son identité (« Je suis »), puis
   saisie des jours au clic ou au glisser. Clic droit pour effacer.
 - **4 statuts** : Travail, Repos, Rempla à trouver, Rempla booké. « Rempla à
@@ -18,19 +17,36 @@ dans la page elle-même.
 - **Jours fériés français** calculés automatiquement (fixes + Pâques,
   Ascension, Pentecôte) et signalés dans la grille.
 - **Gestion d'équipe** : ajout, renommage, couleur et retrait des membres.
+- **Remplaçants** : carnet d'adresses, récapitulatif des jours à pourvoir et
+  envoi de la demande sur WhatsApp.
 
-## Les quatre vues
+## Vues et sélecteur d'affichage
 
-| Vue | Contenu | Navigation ‹ › |
-| --- | --- | --- |
-| **Général** | Toute l'équipe mélangée dans un calendrier mensuel : chaque journée liste les infirmières avec leur statut. Sur téléphone, jours en lignes et infirmières en colonnes. | Mois |
-| **Année** | Une infirmière à la fois, 12 calendriers mensuels (lundi → dimanche) avec un trait de couleur sous chaque jour. Cliquer un nom de mois l'ouvre en vue mois. | Année |
-| **Mois** | Une infirmière à la fois, même calendrier que la vue année mais sur un seul mois, statuts écrits en clair (abrégés sur téléphone). | Mois |
-| **Semaine** | Toute l'équipe, les 7 jours en toutes lettres, statuts écrits en clair. | Semaine |
+Trois onglets de période — **Année**, **Mois**, **Semaine** — et une ligne
+« Afficher » qui choisit *qui* est montré : **Tous** (vue globale) ou une
+infirmière en particulier.
 
-Les vues **Année** et **Mois** portent une barre « Planning de » pour choisir
-l'infirmière affichée ; les vues **Général** et **Semaine** montrent toute
-l'équipe.
+| Afficher | Année | Mois | Semaine |
+| --- | --- | --- | --- |
+| **Tous** (vue globale, lecture seule) | 12 calendriers, chaque jour segmenté aux couleurs des personnes au travail | Calendrier du mois : chaque jour ne montre que **qui travaille**, à sa couleur (sur téléphone, un jour par ligne) | Les 7 jours et qui travaille |
+| **Une infirmière** | 12 calendriers, un trait de couleur par jour selon son statut | Calendrier du mois, statuts écrits en clair | Les 7 jours, son statut |
+
+En vue globale les repos ne sont pas affichés : seules apparaissent les
+personnes au travail, les postes qu'une infirmière a signalés à remplacer, et
+la couverture du jour (rempla à trouver / booké). La saisie se fait en
+choisissant une infirmière, ou depuis le panneau « Jours sans personne ».
+
+## Jours sans personne et remplaçants
+
+- **Jours sans personne** liste, sur la période affichée, les journées où
+  aucune infirmière n'est au travail. Pour chacune : deux boutons **À trouver**
+  / **Booké** et un menu pour **assigner un remplaçant**.
+- **Remplaçants** est le carnet d'adresses : prénom et téléphone de chaque
+  remplaçant.
+- **Partager sur WhatsApp** compose un message listant les jours encore à
+  pourvoir et ouvre WhatsApp — soit sur le contact choisi (bouton WhatsApp en
+  face d'un remplaçant), soit sans destinataire pour le choisir dans WhatsApp.
+  Les numéros français (`06…`) sont convertis au format international.
 
 La vue choisie est mémorisée par navigateur. Les flèches ← → du clavier
 changent aussi de période.
@@ -54,8 +70,8 @@ En dessous de 760 px, la grille bascule : les **jours deviennent les lignes** et
 les **infirmières les colonnes**, ce qui supprime tout défilement horizontal.
 L'en-tête de page et celui du tableau restent collés en haut, la barre des mois
 et les puces de statut défilent horizontalement, et les cibles tactiles font
-au moins 42 px. La vue année passe à deux calendriers par ligne et la vue
-Général bascule en liste (jours en lignes). On peint au **tap** (et non au
+au moins 42 px. La vue année passe à deux calendriers par ligne et la vue globale du mois
+bascule en liste (un jour par ligne). On peint au **tap** (et non au
 contact) pour qu'un simple défilement ne marque jamais un jour par erreur.
 
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
@@ -131,5 +147,7 @@ partagées.
   publie le document complet.
 - Les modifications en attente sont conservées dans `sessionStorage` et
   rejouées après rechargement pour ne rien perdre.
-- L'identité choisie (« Je suis ») est mémorisée par navigateur dans
-  `localStorage`.
+- La personne affichée et le repère « C'est moi » (panneau « Gérer l'équipe »)
+  sont mémorisés par navigateur dans `localStorage`.
+- Les remplaçants (`subs`) et la couverture des jours (`cover`) font partie de
+  l'état partagé.

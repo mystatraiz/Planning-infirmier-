@@ -100,6 +100,7 @@
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     background: var(--bg);
@@ -270,25 +271,84 @@
     width: 22px; height: 22px; line-height: 22px; margin-left: auto; text-align: center;
   }
 
-  /* Vue générale : une ligne par infirmière dans chaque journée. */
+  /* Vue globale : étiquettes des personnes qui travaillent. */
   table.gcal td { height: 104px; }
-  .gline {
-    display: flex; align-items: center; gap: 6px;
-    padding: 3px 5px; border-radius: 7px; margin-bottom: 2px;
-  }
-  .gline:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .gline:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-  .gline.mine { background: var(--accent-soft); }
-  .gdot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-  .gname {
-    font-size: 11.5px; font-weight: 600; flex: 1; min-width: 0;
+  .wtag {
+    display: block; border-radius: 6px; padding: 2px 7px; margin-bottom: 3px;
+    font-size: 11.5px; font-weight: 700; color: #FFFFFF;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .gst {
-    font-size: 10px; font-weight: 700; border-radius: 5px;
-    padding: 1px 5px; min-width: 22px; text-align: center; flex: none;
+  .wtag.cover { color: inherit; }
+  .wtag.cover.s-RAT { box-shadow: inset 0 0 0 1.5px var(--s-RAT-ring); }
+  .nobody { font-size: 11px; color: var(--line-strong); font-style: italic; padding: 1px 4px; }
+  table.wgrid td.wtags { padding: 8px 10px; text-align: left; }
+  table.wgrid td.wtags .wtag { display: inline-block; margin-right: 4px; font-size: 12.5px; padding: 3px 10px; }
+
+  /* Vue globale sur téléphone : un jour par ligne. */
+  .glist { display: block; }
+  .grow {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 14px; border-bottom: 1px solid var(--line); min-height: 46px;
   }
-  .gst.none { color: var(--line-strong); background: transparent; }
+  .grow:last-child { border-bottom: none; }
+  .grow.we { background: var(--weekend); }
+  .grow.hol { background: var(--holiday); }
+  .grow.today { box-shadow: inset 3px 0 0 var(--accent); }
+  .grow.today .gdate { color: var(--accent); }
+  .gdate {
+    width: 62px; flex: none; font-size: 14px; font-weight: 600; padding-top: 3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .gdate .dw { color: var(--muted); font-weight: 500; margin-right: 5px; }
+  .gtags { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .gtags .wtag { display: inline-block; margin-bottom: 0; font-size: 12.5px; padding: 3px 10px; }
+
+  /* Trait segmenté de la vue année en mode global. */
+  table.ycalt td i.seg { display: flex; gap: 1px; background: transparent; }
+  table.ycalt td i.seg span { flex: 1; border-radius: 2px; }
+
+  /* Jours sans personne */
+  .gapshead {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 4px 0 12px;
+  }
+  .gapscount { font-size: 13.5px; font-weight: 600; }
+  .gaplist { display: flex; flex-direction: column; gap: 6px; }
+  .gaprow {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--surface-2);
+  }
+  .gaprow.covered { background: transparent; }
+  .gapdate { flex: 1; min-width: 150px; font-size: 13.5px; font-weight: 600; }
+  .gapactions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .gapbtn {
+    border: 1px solid var(--line); border-radius: 8px; padding: 5px 11px;
+    font-size: 12.5px; font-weight: 700; background: transparent;
+  }
+  .gapbtn:hover { border-color: var(--line-strong); }
+  .gapbtn.on.s-RAT { border-color: var(--s-RAT-ring); }
+  .gapbtn.on.s-RB { border-color: var(--s-RB-ink); }
+  .gapbtn:not(.on) { background: transparent; color: var(--muted); }
+  .gapsel {
+    font: inherit; font-size: 12.5px; color: inherit;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 8px; padding: 5px 8px; max-width: 190px;
+  }
+  .gapsel:disabled { color: var(--muted); }
+
+  .wabtn {
+    background: #25D366; color: #06331A; border: none; border-radius: 9px;
+    padding: 8px 16px; font-size: 13.5px; font-weight: 700;
+  }
+  .wabtn:hover { filter: brightness(1.06); }
+  .wabtn.small { padding: 6px 12px; font-size: 12.5px; }
+  .telinput { width: 150px; }
+  .mebtn {
+    background: transparent; border: 1px solid var(--line); border-radius: 8px;
+    padding: 5px 10px; font-size: 12.5px; font-weight: 600; color: var(--muted);
+  }
+  .mebtn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 
   /* Vue mois : une seule personne, statut écrit en clair. */
   table.mcal td { height: 74px; }
@@ -297,13 +357,6 @@
     font-size: 11.5px; font-weight: 700; line-height: 24px;
     text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-
-  /* Barre de choix de la personne (vues année et mois) */
-  .focusbar {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding: 11px 16px; border-bottom: 1px solid var(--line);
-  }
-  .focusbar .control-label { margin-right: 0; }
 
   /* ---------- vue mois, petit écran : jours en lignes ---------- */
 
@@ -569,7 +622,6 @@
     table.wgrid td.cell { height: 56px; }
     table.wgrid td.cell span { min-width: 64px; height: 34px; font-size: 12.5px; }
 
-    .focusbar { padding: 10px 14px; }
     .ycal { gap: 18px 14px; padding: 14px 12px 4px; }
     .ymtitle { font-size: 14px; padding-bottom: 6px; }
     table.ycalt thead th { font-size: 9px; }
@@ -587,6 +639,10 @@
     .banner { border-radius: 0; border-left: none; border-right: none; margin-bottom: 0; }
 
     .teamrow input[type="text"] { width: 100%; flex: 1 1 140px; }
+    .telinput { width: 100%; flex: 1 1 120px; }
+    .gapdate { min-width: 100%; }
+    .gapsel { flex: 1; max-width: none; }
+    .gaprow { gap: 8px; }
     .colorpick button { width: 26px; height: 26px; }
     .del, .addbtn { padding: 9px 14px; }
 
@@ -635,10 +691,10 @@
 
   <div class="controls">
     <div class="control-group">
-      <span class="control-label">Je suis</span>
+      <span class="control-label">Afficher</span>
       <span id="identity-chips"></span>
     </div>
-    <div class="control-group">
+    <div class="control-group" id="palette-group">
       <span class="control-label">Statut</span>
       <span id="palette"></span>
     </div>
@@ -658,6 +714,16 @@
   <details class="panel" id="year-panel">
     <summary>Récap de l'année</summary>
     <div class="panel-body sumscroll" id="sum-year"></div>
+  </details>
+
+  <details class="panel" id="gaps-panel" open>
+    <summary>Jours sans personne</summary>
+    <div class="panel-body" id="gaps-body"></div>
+  </details>
+
+  <details class="panel" id="subs-panel">
+    <summary>Remplaçants</summary>
+    <div class="panel-body" id="subs-body"></div>
   </details>
 
   <details class="panel" id="team-panel">
@@ -700,7 +766,9 @@
     state.team = state.team || [];
     state.entries = state.entries || {};
     state.seeds = state.seeds || [];
-    state.types = TYPES;            // la liste des statuts est fixée par l'application
+    state.subs = state.subs || [];    // carnet des remplaçants
+    state.cover = state.cover || {};  // { "2027-03-05": { st: "RAT"|"RB", sub: id|null } }
+    state.types = TYPES;              // la liste des statuts est fixée par l'application
     state.v = 2;
   }
   normalizeState();
@@ -718,14 +786,15 @@
   var curYear = now.getFullYear();
   var curMonth = now.getMonth();
   var weekStart = mondayOf(now);
-  var view = "general";
+  var view = "month";
   var brush = "T";
   var dirty = false;
   var saving = false;
   var readOnly = false;
   var painting = false;
   var me = null;
-  var focusWho = null;
+  var ALL = "__all__";          // vue globale : toute l'équipe
+  var focusWho = ALL;
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
@@ -735,8 +804,10 @@
 
   me = lsGet("releve.me");
   if (me && !state.team.some(function (n) { return n.id === me; })) me = null;
+  var savedFocus = lsGet("releve.focus");
+  if (savedFocus) focusWho = savedFocus;
   var savedView = lsGet("releve.view");
-  if (["general", "year", "month", "week"].indexOf(savedView) >= 0) view = savedView;
+  if (["year", "month", "week"].indexOf(savedView) >= 0) view = savedView;
 
   /* Modifications en attente : rejouées après un rechargement ou par-dessus une
      version plus récente du serveur, pour ne jamais perdre ce qui vient d'être saisi. */
@@ -927,12 +998,11 @@
   var narrow = window.matchMedia("(max-width: 760px)");
 
   var VIEWS = [
-    { id: "general", label: "Général" },
     { id: "year", label: "Année" },
     { id: "month", label: "Mois" },
     { id: "week", label: "Semaine" }
   ];
-  var MONTH_VIEWS = { general: 1, month: 1 };   // vues cadrées sur un mois
+  var MONTH_VIEWS = { month: 1 };   // vues cadrées sur un mois
 
   function renderViewSwitch() {
     var box = document.getElementById("viewswitch");
@@ -1028,6 +1098,7 @@
     }
   }
 
+  /* Ligne « Afficher » : la vue globale et chaque infirmière. */
   function renderIdentity() {
     var box = document.getElementById("identity-chips");
     box.textContent = "";
@@ -1035,26 +1106,44 @@
       box.appendChild(el("span", "chip ghost", "ajoutez l'équipe ci-dessous"));
       return;
     }
+    var all = el("button", "chip" + (focusWho === ALL ? " on" : ""), "Tous");
+    all.title = "Vue globale de l'équipe";
+    all.addEventListener("click", function () { setFocus(ALL); });
+    box.appendChild(all);
     state.team.forEach(function (n) {
-      var c = el("button", "chip" + (me === n.id ? " on" : ""));
+      var c = el("button", "chip" + (focusWho === n.id ? " on" : ""));
       var sw = el("span", "swatch");
       sw.style.background = n.color;
       c.appendChild(sw);
       c.appendChild(document.createTextNode(n.name));
-      c.addEventListener("click", function () {
-        me = (me === n.id) ? null : n.id;
-        lsSet("releve.me", me || "");
-        if (me) focusWho = me;
-        renderIdentity();
-        renderGrid();
-      });
+      if (me === n.id) c.title = "C'est vous";
+      c.addEventListener("click", function () { setFocus(n.id); });
       box.appendChild(c);
     });
   }
 
+  function setFocus(who) {
+    focusWho = who;
+    lsSet("releve.focus", who);
+    renderIdentity();
+    renderPalette();
+    renderGrid();
+  }
+
+  function isGlobal() { return focusWho === ALL; }
+
+  function resolveFocus() {
+    if (focusWho === ALL) return;
+    if (!state.team.some(function (n) { return n.id === focusWho; })) {
+      focusWho = state.team.length ? (me || state.team[0].id) : ALL;
+    }
+  }
+
   function renderPalette() {
     var box = document.getElementById("palette");
+    document.getElementById("palette-group").hidden = isGlobal();
     box.textContent = "";
+    if (isGlobal()) return;
     TYPES.forEach(function (t) {
       var c = el("button", "chip tool" + (brush === t.id ? " on" : ""));
       c.appendChild(el("span", "code s-" + t.id, t.glyph));
@@ -1081,13 +1170,6 @@
   function paintCellContent(td) {
     var code = entryOf(td.dataset.n, td.dataset.d);
     var t = code ? typeById(code) : null;
-    if (td.classList.contains("gline")) {
-      var st = td.querySelector(".gst");
-      st.className = "gst " + (t ? "s-" + code : "none");
-      st.textContent = t ? t.glyph : "–";
-      td.title = t ? t.label : "Aucun statut";
-      return;
-    }
     if (td.dataset.cal === "1") {
       var bar = td.querySelector("i");
       if (!bar) { bar = el("i"); td.appendChild(bar); }
@@ -1118,30 +1200,31 @@
       hint.textContent = "";
       return;
     }
+    resolveFocus();
     if (view === "year") renderYear(top, scroll, hint);
     else if (view === "week") renderWeek(scroll, hint);
-    else if (view === "month") renderMonthCalendar(top, scroll, hint);
-    else if (narrow.matches) renderMonthNarrow(scroll, hint);
-    else renderGeneralCalendar(scroll, hint);
+    else if (isGlobal()) {
+      if (narrow.matches) renderGlobalList(scroll, hint);
+      else renderGlobalCalendar(scroll, hint);
+    } else renderMonthCalendar(top, scroll, hint);
   }
 
-  /* Barre de choix de la personne affichée (vues année et mois). */
-  function focusBar(top, label) {
-    if (!focusWho || !state.team.some(function (n) { return n.id === focusWho; })) {
-      focusWho = me || state.team[0].id;
-    }
-    var bar = el("div", "focusbar");
-    bar.appendChild(el("span", "control-label", label));
-    state.team.forEach(function (n) {
-      var c = el("button", "chip" + (focusWho === n.id ? " on" : ""));
-      var sw = el("span", "swatch");
-      sw.style.background = n.color;
-      c.appendChild(sw);
-      c.appendChild(document.createTextNode(n.name));
-      c.addEventListener("click", function () { focusWho = n.id; renderGrid(); });
-      bar.appendChild(c);
-    });
-    top.appendChild(bar);
+  /* Qui travaille ce jour-là, et la couverture éventuelle. */
+  function workersOn(dstr) {
+    return state.team.filter(function (n) { return entryOf(n.id, dstr) === "T"; });
+  }
+  function coverOn(dstr) {
+    var c = state.cover[dstr];
+    return (c && (c.st === "RAT" || c.st === "RB")) ? c : null;
+  }
+  function subById(id) {
+    for (var i = 0; i < state.subs.length; i++) if (state.subs[i].id === id) return state.subs[i];
+    return null;
+  }
+  function coverLabel(c) {
+    if (c.st === "RAT") return "Rempla à trouver";
+    var sb = c.sub ? subById(c.sub) : null;
+    return sb ? "Rempla : " + sb.name : "Rempla booké";
   }
 
   /* Semaines d'un mois, du lundi précédant le 1er au dimanche suivant le dernier. */
@@ -1176,10 +1259,44 @@
     return { dstr: dstr, day: d, inMonth: inMonth, cls: cls };
   }
 
-  /* Vue générale : toute l'équipe mélangée dans un calendrier mensuel. */
-  function renderGeneralCalendar(scroll, hint) {
+  /* Vue globale : chaque journée n'affiche que les personnes qui travaillent,
+     à leur couleur, plus la couverture (rempla à trouver / booké). */
+  /* Postes signalés par une infirmière elle-même comme à remplacer. */
+  function flaggedOn(dstr) {
+    return state.team.filter(function (n) {
+      var e = entryOf(n.id, dstr);
+      return e === "RAT" || e === "RB";
+    });
+  }
+
+  function globalDayContent(td, dstr) {
+    var who = workersOn(dstr);
+    who.forEach(function (n) {
+      var tag = el("div", "wtag");
+      tag.style.background = n.color;
+      tag.textContent = n.name;
+      tag.title = n.name + " — Travail";
+      td.appendChild(tag);
+    });
+    var flagged = flaggedOn(dstr);
+    flagged.forEach(function (n) {
+      var code = entryOf(n.id, dstr);
+      var t = typeById(code);
+      var tag = el("div", "wtag cover s-" + code, n.name + " · " + t.label.toLowerCase());
+      tag.title = n.name + " — " + t.label;
+      td.appendChild(tag);
+    });
+    var c = coverOn(dstr);
+    if (c) {
+      var ct = el("div", "wtag cover s-" + c.st, coverLabel(c));
+      ct.title = coverLabel(c);
+      td.appendChild(ct);
+    }
+    if (!who.length && !flagged.length && !c) td.appendChild(el("div", "nobody", "personne"));
+  }
+
+  function renderGlobalCalendar(scroll, hint) {
     var today = todayStr();
-    var hols = holidays;
     var w = monthWeeks(curYear, curMonth);
     var table = el("table", "gcal");
     weekdayHead(table);
@@ -1188,38 +1305,48 @@
       var tr = el("tr");
       for (var k = 0; k < 7; k++) {
         var date = addDays(w.start, i * 7 + k);
-        var info = dayClasses(date, curMonth, hols, today);
+        var info = dayClasses(date, curMonth, holidays, today);
         var td = el("td", info.cls.join(" "));
         td.appendChild(el("b", null, String(info.day)));
-        if (info.inMonth) {
-          (function (dstr) {
-            state.team.forEach(function (n) {
-              var line = el("div", "cell gline" + (me === n.id ? " mine" : ""));
-              line.dataset.n = n.id;
-              line.dataset.d = dstr;
-              line.tabIndex = 0;
-              var dot = el("span", "gdot");
-              dot.style.background = n.color;
-              line.appendChild(dot);
-              line.appendChild(el("span", "gname", n.name));
-              line.appendChild(el("span", "gst"));
-              paintCellContent(line);
-              td.appendChild(line);
-            });
-          })(info.dstr);
-        }
+        if (info.inMonth) globalDayContent(td, info.dstr);
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
     }
     table.appendChild(tbody);
     scroll.appendChild(table);
-    hint.textContent = "Toute l'équipe sur le mois. Choisissez un statut puis cliquez sur la ligne d'une personne pour le lui appliquer.";
+    hint.textContent = "Vue globale : seules les personnes qui travaillent sont affichées. Choisissez une infirmière ci-dessus pour modifier son planning.";
+  }
+
+  /* Sur téléphone, la même chose en liste : un jour par ligne. */
+  function renderGlobalList(scroll, hint) {
+    var nd = daysInMonth(curYear, curMonth);
+    var hols = holidays(curYear);
+    var today = todayStr();
+    var list = el("div", "glist");
+    for (var d = 1; d <= nd; d++) {
+      var dstr = fmt(curYear, curMonth, d);
+      var date = new Date(curYear, curMonth, d);
+      var cls = ["grow"];
+      if (date.getDay() === 0 || date.getDay() === 6) cls.push("we");
+      if (hols[dstr]) cls.push("hol");
+      if (dstr === today) cls.push("today");
+      var row = el("div", cls.join(" "));
+      var day = el("div", "gdate");
+      day.appendChild(el("span", "dw", DOW_SHORT[date.getDay()]));
+      day.appendChild(document.createTextNode(String(d)));
+      row.appendChild(day);
+      var tags = el("div", "gtags");
+      globalDayContent(tags, dstr);
+      row.appendChild(tags);
+      list.appendChild(row);
+    }
+    scroll.appendChild(list);
+    hint.textContent = "Vue globale : seules les personnes qui travaillent sont affichées. Choisissez une infirmière ci-dessus pour modifier son planning.";
   }
 
   /* Vue mois : une seule personne, calendrier mensuel avec statuts en clair. */
   function renderMonthCalendar(top, scroll, hint) {
-    focusBar(top, "Planning de");
     var today = todayStr();
     var hols = holidays;
     var w = monthWeeks(curYear, curMonth);
@@ -1253,70 +1380,28 @@
     hint.textContent = "Choisissez un statut puis touchez les jours. Changez de personne avec les onglets ci-dessus.";
   }
 
-  /* Vue mois, petit écran : jours en lignes, infirmières en colonnes. */
-  function renderMonthNarrow(scroll, hint) {
-    var nd = daysInMonth(curYear, curMonth);
-    var hols = holidays(curYear);
-    var today = todayStr();
-
-    var table = el("table", "mgrid");
-    var thead = el("thead");
-    var hr = el("tr");
-    hr.appendChild(el("th", "mcorner", MONTHS_SHORT[curMonth] + " " + curYear));
-    state.team.forEach(function (n) {
-      var th = el("th", me === n.id ? "mine" : "");
-      var sw = el("span", "swatch");
-      sw.style.background = n.color;
-      th.appendChild(sw);
-      th.appendChild(document.createTextNode(n.name));
-      th.title = n.name;
-      hr.appendChild(th);
-    });
-    thead.appendChild(hr);
-    table.appendChild(thead);
-
-    var tbody = el("tbody");
-    for (var d = 1; d <= nd; d++) {
-      var dstr = fmt(curYear, curMonth, d);
-      var date = new Date(curYear, curMonth, d);
-      var cls = [];
-      if (date.getDay() === 0 || date.getDay() === 6) cls.push("we");
-      if (hols[dstr]) cls.push("hol");
-      if (dstr === today) cls.push("today");
-      var tr = el("tr", cls.join(" "));
-      var dayTh = el("th", "mday");
-      dayTh.appendChild(el("span", "dw", DOW_SHORT[date.getDay()]));
-      dayTh.appendChild(document.createTextNode(String(d)));
-      tr.appendChild(dayTh);
-      (function (dstr) {
-        state.team.forEach(function (n) { tr.appendChild(makeCell(n.id, dstr)); });
-      })(dstr);
-      tbody.appendChild(tr);
-    }
-    table.appendChild(tbody);
-    scroll.appendChild(table);
-    hint.textContent = "Choisissez un statut en haut, puis touchez les jours. « Effacer » retire un statut.";
-  }
-
-  /* Vue semaine : sept jours détaillés, infirmières en colonnes. */
+  /* Vue semaine : sept jours détaillés. En vue globale, seules les personnes
+     qui travaillent apparaissent ; sinon le statut de la personne choisie. */
   function renderWeek(scroll, hint) {
     var hols = holidays(weekStart.getFullYear());
     var holsEnd = holidays(addDays(weekStart, 6).getFullYear());
     var today = todayStr();
+    var person = isGlobal() ? null : state.team.filter(function (n) { return n.id === focusWho; })[0];
 
     var table = el("table", "wgrid");
     var thead = el("thead");
     var hr = el("tr");
     hr.appendChild(el("th", "wcorner", "Semaine"));
-    state.team.forEach(function (n) {
-      var th = el("th", me === n.id ? "mine" : "");
+    if (person) {
+      var th = el("th", me === person.id ? "mine" : "");
       var sw = el("span", "swatch");
-      sw.style.background = n.color;
+      sw.style.background = person.color;
       th.appendChild(sw);
-      th.appendChild(document.createTextNode(n.name));
-      th.title = n.name;
+      th.appendChild(document.createTextNode(person.name));
       hr.appendChild(th);
-    });
+    } else {
+      hr.appendChild(el("th", null, "Qui travaille"));
+    }
     thead.appendChild(hr);
     table.appendChild(thead);
 
@@ -1324,10 +1409,9 @@
     for (var i = 0; i < 7; i++) {
       var date = addDays(weekStart, i);
       var dstr = fmt(date.getFullYear(), date.getMonth(), date.getDate());
-      var isHol = hols[dstr] || holsEnd[dstr];
       var cls = [];
       if (date.getDay() === 0 || date.getDay() === 6) cls.push("we");
-      if (isHol) cls.push("hol");
+      if (hols[dstr] || holsEnd[dstr]) cls.push("hol");
       if (dstr === today) cls.push("today");
       var tr = el("tr", cls.join(" "));
       var dayTh = el("th", "wday");
@@ -1335,25 +1419,28 @@
       dayTh.appendChild(document.createTextNode(String(date.getDate())));
       dayTh.appendChild(el("span", "dm", MONTHS_SHORT[date.getMonth()].toLowerCase()));
       tr.appendChild(dayTh);
-      (function (dstr) {
-        state.team.forEach(function (n) {
-          var td = makeCell(n.id, dstr);
-          td.dataset.full = "1";
-          paintCellContent(td);
-          tr.appendChild(td);
-        });
-      })(dstr);
+      if (person) {
+        var td = makeCell(person.id, dstr);
+        td.dataset.full = "1";
+        paintCellContent(td);
+        tr.appendChild(td);
+      } else {
+        var gtd = el("td", "wtags");
+        globalDayContent(gtd, dstr);
+        tr.appendChild(gtd);
+      }
       tbody.appendChild(tr);
     }
     table.appendChild(tbody);
     scroll.appendChild(table);
-    hint.textContent = "Choisissez un statut puis touchez une case pour l'appliquer sur cette semaine.";
+    hint.textContent = person
+      ? "Choisissez un statut puis touchez une case pour l'appliquer sur cette semaine."
+      : "Vue globale de la semaine. Choisissez une infirmière ci-dessus pour modifier son planning.";
   }
 
   /* Vue année : douze calendriers mensuels, un trait de couleur sous chaque
      jour. Une infirmière à la fois, choisie par les onglets. */
   function renderYear(top, scroll, hint) {
-    focusBar(top, "Année de");
     var today = todayStr();
     var cal = el("div", "ycal");
     for (var m = 0; m < 12; m++) cal.appendChild(monthCard(m, today));
@@ -1368,6 +1455,22 @@
     });
     scroll.appendChild(legend);
     hint.textContent = "Touchez un jour pour le modifier, ou le nom d'un mois pour l'ouvrir en détail.";
+  }
+
+  /* Trait de l'année en vue globale : une part par personne au travail. */
+  function globalBar(dstr) {
+    var i = el("i", "seg");
+    workersOn(dstr).forEach(function (n) {
+      var sg = el("span");
+      sg.style.background = n.color;
+      i.appendChild(sg);
+    });
+    flaggedOn(dstr).forEach(function (n) {
+      i.appendChild(el("span", "s-" + entryOf(n.id, dstr)));
+    });
+    var c = coverOn(dstr);
+    if (c) i.appendChild(el("span", "s-" + c.st));
+    return i;
   }
 
   function dayIndex(date) {
@@ -1391,17 +1494,21 @@
         var date = addDays(w.start, i * 7 + k);
         var info = dayClasses(date, m, holidays, today);
         var cls = info.cls.slice();
-        if (info.inMonth) cls.push("cell");
+        if (info.inMonth && !isGlobal()) cls.push("cell");
         var td = el("td", cls.join(" "));
         td.appendChild(el("b", null, String(info.day)));
-        td.appendChild(el("i"));
-        td.dataset.cal = "1";
-        // Les jours des mois voisins gardent leur trait, en retrait, sans être modifiables.
-        td.dataset.n = focusWho;
-        td.dataset.d = info.dstr;
-        if (info.inMonth) td.tabIndex = 0;
-        paintCellContent(td);
-        if (!info.inMonth) delete td.dataset.n;
+        if (isGlobal()) {
+          td.appendChild(globalBar(info.dstr));
+        } else {
+          td.appendChild(el("i"));
+          td.dataset.cal = "1";
+          // Les jours des mois voisins gardent leur trait, en retrait, sans être modifiables.
+          td.dataset.n = focusWho;
+          td.dataset.d = info.dstr;
+          if (info.inMonth) td.tabIndex = 0;
+          paintCellContent(td);
+          if (!info.inMonth) delete td.dataset.n;
+        }
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
@@ -1494,6 +1601,246 @@
     }
   }
 
+  /* ---------- jours sans personne et remplaçants ---------- */
+
+  function longDate(dstr) {
+    var q = dstr.split("-");
+    var date = new Date(+q[0], +q[1] - 1, +q[2]);
+    return DOW_LONG[date.getDay()] + " " + date.getDate() + " " + MONTHS[date.getMonth()].toLowerCase();
+  }
+
+  /* Jours de la période affichée où personne de l'équipe ne travaille. */
+  function uncoveredDays() {
+    var r = currentRange();
+    var out = [];
+    var from = r.from.split("-"), to = r.to.split("-");
+    var d = new Date(+from[0], +from[1] - 1, +from[2]);
+    var end = new Date(+to[0], +to[1] - 1, +to[2]);
+    while (d <= end) {
+      var dstr = fmt(d.getFullYear(), d.getMonth(), d.getDate());
+      if (!workersOn(dstr).length) out.push(dstr);
+      d = addDays(d, 1);
+    }
+    return { days: out, title: r.title };
+  }
+
+  function setCover(dstr, st) {
+    if (!st) delete state.cover[dstr];
+    else {
+      var cur = state.cover[dstr] || {};
+      state.cover[dstr] = { st: st, sub: st === "RB" ? (cur.sub || null) : null };
+    }
+    markDirty();
+    renderGaps();
+    renderGrid();
+  }
+
+  function assignSub(dstr, subId) {
+    var cur = state.cover[dstr] || { st: "RB" };
+    state.cover[dstr] = { st: subId ? "RB" : cur.st, sub: subId || null };
+    markDirty();
+    renderGaps();
+    renderGrid();
+  }
+
+  function renderGaps() {
+    var box = document.getElementById("gaps-body");
+    box.textContent = "";
+    if (!state.team.length) {
+      box.appendChild(el("div", "empty-hint", "Ajoutez d'abord l'équipe."));
+      return;
+    }
+    var u = uncoveredDays();
+    var head = el("div", "gapshead");
+    var toFind = u.days.filter(function (d) {
+      var c = coverOn(d);
+      return !c || c.st === "RAT";
+    });
+    head.appendChild(el("span", "gapscount",
+      u.days.length ? u.days.length + " jour" + (u.days.length > 1 ? "s" : "") + " sans personne · " + u.title
+                    : "Aucun jour découvert · " + u.title));
+    if (toFind.length) {
+      var share = el("button", "wabtn", "Partager sur WhatsApp");
+      share.addEventListener("click", function () { shareOnWhatsApp(null); });
+      head.appendChild(share);
+    }
+    box.appendChild(head);
+
+    if (!u.days.length) {
+      box.appendChild(el("p", "hint-inline", "Toutes les journées de cette période sont assurées par quelqu'un."));
+      return;
+    }
+
+    var list = el("div", "gaplist");
+    u.days.forEach(function (dstr) {
+      var c = coverOn(dstr);
+      var row = el("div", "gaprow" + (c ? " covered" : ""));
+      row.appendChild(el("span", "gapdate", longDate(dstr)));
+
+      var actions = el("span", "gapactions");
+      [{ id: "RAT", label: "À trouver" }, { id: "RB", label: "Booké" }].forEach(function (o) {
+        var b = el("button", "gapbtn s-" + o.id + ((c && c.st === o.id) ? " on" : ""), o.label);
+        b.addEventListener("click", function () {
+          setCover(dstr, (c && c.st === o.id) ? null : o.id);
+        });
+        actions.appendChild(b);
+      });
+
+      var sel = el("select", "gapsel");
+      sel.setAttribute("aria-label", "Remplaçant pour le " + longDate(dstr));
+      var none = el("option", null, state.subs.length ? "— remplaçant —" : "— aucun remplaçant enregistré —");
+      none.value = "";
+      sel.appendChild(none);
+      state.subs.forEach(function (sb) {
+        var o = el("option", null, sb.name);
+        o.value = sb.id;
+        if (c && c.sub === sb.id) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.disabled = !state.subs.length;
+      sel.addEventListener("change", function () { assignSub(dstr, sel.value); });
+      actions.appendChild(sel);
+      row.appendChild(actions);
+      list.appendChild(row);
+    });
+    box.appendChild(list);
+  }
+
+  /* Numéro au format international, sans espaces ni signes. */
+  function waNumber(phone) {
+    var n = String(phone || "").replace(/[^0-9]/g, "");
+    if (!n) return "";
+    if (n.indexOf("00") === 0) n = n.slice(2);
+    else if (n.charAt(0) === "0") n = "33" + n.slice(1);   // numéro français
+    return n;
+  }
+
+  function shareText() {
+    var u = uncoveredDays();
+    var days = u.days.filter(function (d) {
+      var c = coverOn(d);
+      return !c || c.st === "RAT";
+    });
+    if (!days.length) return "";
+    var lines = ["Bonjour, nous cherchons un remplacement pour :"];
+    days.forEach(function (d) { lines.push("• " + longDate(d)); });
+    lines.push("");
+    lines.push("Merci de me dire vos disponibilités.");
+    return lines.join("\n");
+  }
+
+  function shareOnWhatsApp(sub) {
+    var text = shareText();
+    if (!text) { toast("Aucun jour à pourvoir sur cette période."); return; }
+    var num = sub ? waNumber(sub.phone) : "";
+    if (sub && !num) { toast("Renseignez le numéro de " + sub.name + " dans « Remplaçants »."); return; }
+    var url = "https://wa.me/" + num + "?text=" + encodeURIComponent(text);
+    window.open(url, "_blank", "noopener");
+  }
+
+  function renderSubs() {
+    var box = document.getElementById("subs-body");
+    box.textContent = "";
+    var list = el("div", "teamlist");
+    state.subs.forEach(function (sb) {
+      var row = el("div", "teamrow");
+      var name = el("input");
+      name.type = "text";
+      name.value = sb.name;
+      name.setAttribute("aria-label", "Nom du remplaçant");
+      name.addEventListener("change", function () {
+        var v = name.value.trim();
+        if (!v) { name.value = sb.name; return; }
+        sb.name = v;
+        markDirty();
+        renderGaps();
+        renderGrid();
+      });
+      row.appendChild(name);
+
+      var tel = el("input", "telinput");
+      tel.type = "tel";
+      tel.value = sb.phone || "";
+      tel.placeholder = "06 12 34 56 78";
+      tel.setAttribute("aria-label", "Téléphone de " + sb.name);
+      tel.addEventListener("change", function () {
+        sb.phone = tel.value.trim();
+        markDirty();
+        renderSubs();
+      });
+      row.appendChild(tel);
+
+      var wa = el("button", "wabtn small", "WhatsApp");
+      wa.title = "Envoyer la liste des jours à pourvoir à " + sb.name;
+      wa.addEventListener("click", function () { shareOnWhatsApp(sb); });
+      row.appendChild(wa);
+
+      var del = el("button", "del", "Retirer");
+      del.dataset.armed = "";
+      del.addEventListener("click", function () {
+        if (!del.dataset.armed) {
+          del.dataset.armed = "1";
+          del.textContent = "Retirer " + sb.name + " ? Confirmer";
+          setTimeout(function () {
+            if (del.isConnected) { del.dataset.armed = ""; del.textContent = "Retirer"; }
+          }, 4000);
+          return;
+        }
+        state.subs = state.subs.filter(function (x) { return x.id !== sb.id; });
+        Object.keys(state.cover).forEach(function (d) {
+          if (state.cover[d].sub === sb.id) state.cover[d].sub = null;
+        });
+        markDirty();
+        renderSubs();
+        renderGaps();
+        renderGrid();
+      });
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+    box.appendChild(list);
+
+    var add = el("div", "teamrow");
+    var an = el("input");
+    an.type = "text";
+    an.id = "add-sub-name";
+    an.placeholder = "Prénom du remplaçant";
+    an.setAttribute("aria-label", "Prénom du remplaçant");
+    var at = el("input", "telinput");
+    at.type = "tel";
+    at.id = "add-sub-tel";
+    at.placeholder = "06 12 34 56 78";
+    at.setAttribute("aria-label", "Téléphone du remplaçant");
+    var ab = el("button", "addbtn", "＋ Ajouter");
+    function addSub() {
+      var v = an.value.trim();
+      if (!v) { an.focus(); return; }
+      state.subs.push({ id: "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+                        name: v, phone: at.value.trim() });
+      an.value = "";
+      at.value = "";
+      markDirty();
+      renderSubs();
+      renderGaps();
+      an.focus();
+    }
+    ab.addEventListener("click", addSub);
+    [an, at].forEach(function (inp) {
+      inp.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); addSub(); }
+      });
+    });
+    add.appendChild(an);
+    add.appendChild(at);
+    add.appendChild(ab);
+    box.appendChild(add);
+
+    if (!state.subs.length) {
+      box.appendChild(el("p", "hint-inline",
+        "Enregistrez ici les remplaçants et leur numéro : vous pourrez leur envoyer la liste des jours à pourvoir en un clic."));
+    }
+  }
+
   /* ---------- équipe ---------- */
 
   function renderTeam() {
@@ -1530,6 +1877,16 @@
         picker.appendChild(b);
       });
       row.appendChild(picker);
+      var mine = el("button", "mebtn" + (me === n.id ? " on" : ""), me === n.id ? "✓ C'est moi" : "C'est moi");
+      mine.title = "Mémorisé sur cet appareil uniquement";
+      mine.addEventListener("click", function () {
+        me = (me === n.id) ? null : n.id;
+        lsSet("releve.me", me || "");
+        renderTeam();
+        renderIdentity();
+        renderGrid();
+      });
+      row.appendChild(mine);
       var del = el("button", "del", "Retirer");
       del.dataset.armed = "";
       del.addEventListener("click", function () {
@@ -1544,7 +1901,7 @@
         state.team = state.team.filter(function (x) { return x.id !== n.id; });
         delete state.entries[n.id];
         if (me === n.id) { me = null; lsSet("releve.me", ""); }
-        if (focusWho === n.id) focusWho = null;
+        if (focusWho === n.id) { focusWho = ALL; lsSet("releve.focus", ALL); }
         markDirty();
         renderAll();
       });
@@ -1598,6 +1955,7 @@
     clearTimeout(sumTimer);
     sumTimer = setTimeout(function () {
       renderSums();
+      renderGaps();
       if (MONTH_VIEWS[view]) renderMonths();
     }, 250);
   }
@@ -1973,6 +2331,8 @@
     renderPalette();
     renderGrid();
     renderSums();
+    renderGaps();
+    renderSubs();
     renderTeam();
     updateSaveStatus();
   }
