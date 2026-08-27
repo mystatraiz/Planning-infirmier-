@@ -8,8 +8,8 @@ dans la page elle-même.
 
 - **Trois vues** de période (année, mois, semaine) combinées à un sélecteur
   **Tous / par infirmière**, avec navigation ‹ › et bouton « Aujourd'hui ».
-- **Chacune gère ses jours** : sélection de son identité (« Je suis »), puis
-  saisie des jours au clic ou au glisser. Clic droit pour effacer.
+- **Chacune gère ses jours** : on choisit son prénom dans « Afficher », puis
+  on saisit ses jours au clic ou au glisser. Clic droit pour effacer.
 - **4 statuts** : Travail, Repos, Rempla à trouver, Rempla booké. « Rempla à
   trouver » est cerclé d'orange pour repérer les trous à combler.
 - **Récapitulatifs** : sur la période affichée et sur l'année — nombre de jours
@@ -66,13 +66,12 @@ avec sa propre icône.
 
 ### Ce qui change sur petit écran
 
-En dessous de 760 px, la grille bascule : les **jours deviennent les lignes** et
-les **infirmières les colonnes**, ce qui supprime tout défilement horizontal.
-L'en-tête de page et celui du tableau restent collés en haut, la barre des mois
+En dessous de 760 px, la vue année passe à deux calendriers par ligne et la vue
+globale du mois bascule en liste (un jour par ligne), ce qui supprime tout
+défilement horizontal. L'en-tête de page reste collé en haut, la barre des mois
 et les puces de statut défilent horizontalement, et les cibles tactiles font
-au moins 42 px. La vue année passe à deux calendriers par ligne et la vue globale du mois
-bascule en liste (un jour par ligne). On peint au **tap** (et non au
-contact) pour qu'un simple défilement ne marque jamais un jour par erreur.
+au moins 42 px. On saisit au **tap** (et non au contact) pour qu'un simple
+défilement ne marque jamais un jour par erreur.
 
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
 du planning passent toujours par le réseau, jamais par le cache.
@@ -140,7 +139,7 @@ partagées.
 ## Détails techniques
 
 - `index.html` est un document HTML complet (déployé tel quel sur GitHub Pages).
-- L'état (équipe, vacations, jours) vit dans un bloc
+- L'état (équipe, statuts des jours, remplaçants, couverture) vit dans un bloc
   `<script type="application/json" id="app-state">` délimité par les
   marqueurs `<!--RELEVE-STATE-->` … `<!--/RELEVE-STATE-->`.
 - À l'enregistrement, la page récupère sa propre source, remplace ce bloc et
