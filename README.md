@@ -17,6 +17,31 @@ dans la page elle-même.
   Ascension, Pentecôte) et signalés dans la grille.
 - **Gestion d'équipe** : ajout, renommage, couleur et retrait des membres.
 
+## Application mobile (installable sur iPhone)
+
+La page est une *web app* installable : elle s'adapte au téléphone et peut être
+ajoutée à l'écran d'accueil.
+
+- **Sur iPhone** : ouvrir le site dans Safari, toucher **Partager** puis
+  **« Sur l'écran d'accueil »**. Un rappel s'affiche en bas de la page tant que
+  ce n'est pas fait (il peut être masqué).
+- **Sur Android** : Chrome propose « Installer l'application ».
+
+Une fois installée, l'application s'ouvre en plein écran, sans barre d'adresse,
+avec sa propre icône.
+
+### Ce qui change sur petit écran
+
+En dessous de 760 px, la grille bascule : les **jours deviennent les lignes** et
+les **infirmières les colonnes**, ce qui supprime tout défilement horizontal.
+L'en-tête de page et celui du tableau restent collés en haut, la barre des mois
+et les puces de vacation défilent horizontalement, et les cibles tactiles font
+au moins 42 px. On peint au **tap** (et non au contact) pour qu'un simple
+défilement ne marque jamais un jour par erreur.
+
+Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
+du planning passent toujours par le réseau, jamais par le cache.
+
 ## Roulement pré-rempli 2027
 
 L'année 2027 est pré-remplie avec un roulement de deux semaines entre deux
@@ -39,7 +64,7 @@ réapplique jamais par-dessus les modifications de l'équipe.
 
 Deux hébergements possibles, avec synchronisation d'équipe dans les deux cas :
 
-### 1. GitHub Pages + Supabase (navigateur normal, sans Claude)
+### 1. GitHub Pages + Supabase (hébergement de référence)
 
 Le dépôt contient un workflow (`.github/workflows/pages.yml`) qui déploie la
 page sur GitHub Pages à chaque push. La synchronisation passe par une petite
@@ -74,6 +99,7 @@ partagées.
 
 ## Détails techniques
 
+- `index.html` est un document HTML complet (déployé tel quel sur GitHub Pages).
 - L'état (équipe, vacations, jours) vit dans un bloc
   `<script type="application/json" id="app-state">` délimité par les
   marqueurs `<!--RELEVE-STATE-->` … `<!--/RELEVE-STATE-->`.

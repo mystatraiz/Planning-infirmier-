@@ -1,3 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Planning annuel collaboratif de l'équipe infirmière.">
+<meta name="theme-color" content="#F6F8F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101615" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Relève">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png" type="image/png">
 <title>Relève</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
@@ -151,6 +167,7 @@
     padding: 12px 16px; margin-bottom: 14px; box-shadow: var(--shadow);
   }
   .control-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  #palette, #identity-chips { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
   .control-label {
     font-size: 11.5px; font-weight: 700; text-transform: uppercase;
     letter-spacing: .07em; color: var(--muted); margin-right: 2px;
@@ -287,10 +304,141 @@
     transition: opacity .2s, transform .2s; max-width: 90vw; z-index: 50;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- vue mobile : jours en lignes, infirmières en colonnes ---------- */
+
+  table.mgrid { width: 100%; border-collapse: separate; border-spacing: 0; }
+  table.mgrid thead th {
+    position: sticky; top: var(--stick, 0px); z-index: 3; background: var(--surface);
+    border-bottom: 1px solid var(--line-strong);
+    font-size: 12.5px; font-weight: 700; padding: 9px 4px; text-align: center;
+    max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  table.mgrid thead th.mcorner {
+    text-align: left; padding-left: 13px; font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .06em; font-weight: 700;
+  }
+  table.mgrid thead th.mine { color: var(--accent); }
+  table.mgrid thead th .swatch {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
+  }
+  table.mgrid th.mday {
+    text-align: left; padding: 0 6px 0 13px; width: 78px; font-size: 14px; font-weight: 600;
+    white-space: nowrap; font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid var(--line);
+  }
+  table.mgrid th.mday .dw { color: var(--muted); font-weight: 500; margin-right: 5px; }
+  table.mgrid td.cell { height: 48px; border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); }
+  table.mgrid td.cell span { min-width: 34px; height: 32px; font-size: 13.5px; border-radius: 9px; }
+  table.mgrid tr.we th.mday, table.mgrid tr.we td.cell { background: var(--weekend); }
+  table.mgrid tr.hol th.mday, table.mgrid tr.hol td.cell { background: var(--holiday); }
+  table.mgrid tr.hol th.mday::after { content: " •"; color: var(--danger); }
+  table.mgrid tr.today th.mday {
+    color: var(--accent);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  table.mgrid tr:last-child th.mday, table.mgrid tr:last-child td.cell { border-bottom: none; }
+
+  /* ---------- adaptation aux petits écrans ---------- */
+
+  @media (max-width: 760px) {
+    body { font-size: 16px; }
+    .wrap {
+      padding: 0 0 calc(28px + env(safe-area-inset-bottom));
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    header.top {
+      position: sticky; top: 0; z-index: 20;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+      padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+      gap: 8px 10px; flex-wrap: wrap;
+    }
+    .wordmark { font-size: 21px; }
+    .wordmark .tag { display: none; }
+    .spacer { display: none; }
+    .yearnav { margin-left: auto; }
+    .yearnav .year { font-size: 17px; min-width: 52px; }
+    .iconbtn { width: 34px; height: 34px; }
+
+    /* L'enregistrement est automatique : le bouton n'apparaît qu'en secours. */
+    .savezone { margin-left: auto; gap: 8px; }
+    #save-status { font-size: 12.5px; }
+    #save-btn { padding: 8px 14px; font-size: 13.5px; }
+    #save-btn:disabled { display: none; }
+
+    #palette, #identity-chips { flex-wrap: nowrap; }
+
+    .months {
+      flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+      gap: 6px; margin: 0; padding: 10px 14px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .months::-webkit-scrollbar { display: none; }
+    .months button { flex: none; padding: 8px 14px; font-size: 14px; }
+
+    .controls {
+      border-radius: 0; border-left: none; border-right: none;
+      box-shadow: none; padding: 10px 0 12px; margin-bottom: 0; gap: 8px 0;
+      flex-direction: column; align-items: stretch;
+    }
+    .control-group {
+      flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+      gap: 7px; padding: 0 14px; -webkit-overflow-scrolling: touch;
+    }
+    .control-group::-webkit-scrollbar { display: none; }
+    .control-label { position: sticky; left: 0; background: var(--surface); padding-right: 4px; z-index: 1; }
+    .chip { flex: none; padding: 10px 15px; font-size: 14.5px; min-height: 42px; }
+    .chip.tool .code { min-width: 24px; height: 22px; font-size: 12px; }
+
+    .gridcard {
+      border-radius: 0; border-left: none; border-right: none;
+      box-shadow: none; margin-bottom: 14px;
+      overflow: visible; /* sinon l'en-tête collant du tableau ne tient pas */
+    }
+    .gridscroll { overflow-x: visible; }
+    .hint-inline { padding: 10px 14px 12px; font-size: 12.5px; }
+
+    details.panel {
+      border-radius: 0; border-left: none; border-right: none;
+      box-shadow: none; margin-bottom: 0; border-top: none;
+    }
+    details.panel > summary { padding: 14px; font-size: 15px; }
+    details.panel .panel-body { padding: 0 14px 16px; }
+
+    .banner { border-radius: 0; border-left: none; border-right: none; margin-bottom: 0; }
+
+    .teamrow input[type="text"] { width: 100%; flex: 1 1 140px; }
+    .colorpick button { width: 26px; height: 26px; }
+    .del, .addbtn { padding: 9px 14px; }
+
+    #toast { bottom: calc(20px + env(safe-area-inset-bottom)); }
+  }
+
+  /* Écrans très étroits : on resserre la colonne de date. */
+  @media (max-width: 380px) {
+    table.mgrid th.mday { width: 68px; font-size: 13px; padding-left: 10px; }
+    table.mgrid td.cell span { min-width: 30px; }
+  }
+
+  /* En mode application installée, la page occupe tout l'écran. */
+  @media (display-mode: standalone) {
+    .install-hint { display: none !important; }
+  }
+
+  .install-hint {
+    font-size: 12.5px; color: var(--muted); padding: 10px 14px 0; text-align: center;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     #toast, details.panel > summary::before { transition: none; }
   }
 </style>
+</head>
+
+<body>
 
 <script src="config.js"></script>
 
@@ -388,6 +536,7 @@
   var MONTHS_SHORT = ["Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin",
     "Juil.", "Août", "Sept.", "Oct.", "Nov.", "Déc."];
   var DOW = ["D", "L", "M", "M", "J", "V", "S"];
+  var DOW_SHORT = ["dim", "lun", "mar", "mer", "jeu", "ven", "sam"];
 
   var now = new Date();
   var curYear = now.getFullYear();
@@ -573,7 +722,11 @@
       return;
     }
     if (saving) { st.textContent = "Enregistrement…"; st.classList.remove("dirty"); btn.disabled = true; return; }
-    if (dirty) { st.textContent = "Modifications non enregistrées"; st.classList.add("dirty"); btn.disabled = false; }
+    if (dirty) {
+      st.textContent = narrow.matches ? "Non enregistré" : "Modifications non enregistrées";
+      st.classList.add("dirty");
+      btn.disabled = false;
+    }
     else { st.textContent = "Enregistré"; st.classList.remove("dirty"); btn.disabled = true; }
   }
 
@@ -589,6 +742,10 @@
       })(m);
     }
     document.getElementById("year-label").textContent = String(curYear);
+    var on = nav.querySelector("button.on");
+    if (on && nav.scrollWidth > nav.clientWidth) {
+      nav.scrollTo({ left: on.offsetLeft - nav.clientWidth / 2 + on.offsetWidth / 2, behavior: "auto" });
+    }
   }
 
   function monthHasEntries(y, m) {
@@ -637,6 +794,8 @@
     box.appendChild(er);
   }
 
+  var narrow = window.matchMedia("(max-width: 760px)");
+
   function renderGrid() {
     var scroll = document.getElementById("gridscroll");
     var hint = document.getElementById("grid-hint");
@@ -647,6 +806,7 @@
       hint.textContent = "";
       return;
     }
+    if (narrow.matches) { renderMonthList(scroll, hint); return; }
     var nd = daysInMonth(curYear, curMonth);
     var hols = holidays(curYear);
     var todayStr = fmt(now.getFullYear(), now.getMonth(), now.getDate());
@@ -697,6 +857,56 @@
     table.appendChild(tbody);
     scroll.appendChild(table);
     hint.textContent = "Choisissez une vacation puis cliquez (ou glissez) sur vos jours. Clic droit : effacer. Le point rouge marque les jours fériés.";
+  }
+
+  /* Vue mobile : un jour par ligne, une colonne par infirmière. */
+  function renderMonthList(scroll, hint) {
+    var nd = daysInMonth(curYear, curMonth);
+    var hols = holidays(curYear);
+    var todayStr = fmt(now.getFullYear(), now.getMonth(), now.getDate());
+
+    var table = el("table", "mgrid");
+    var thead = el("thead");
+    var hr = el("tr");
+    hr.appendChild(el("th", "mcorner", MONTHS_SHORT[curMonth] + " " + curYear));
+    state.team.forEach(function (n) {
+      var th = el("th", me === n.id ? "mine" : "");
+      var sw = el("span", "swatch");
+      sw.style.background = n.color;
+      th.appendChild(sw);
+      th.appendChild(document.createTextNode(n.name));
+      th.title = n.name;
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    var tbody = el("tbody");
+    for (var d = 1; d <= nd; d++) {
+      var dstr = fmt(curYear, curMonth, d);
+      var date = new Date(curYear, curMonth, d);
+      var cls = [];
+      if (date.getDay() === 0 || date.getDay() === 6) cls.push("we");
+      if (hols[dstr]) cls.push("hol");
+      if (dstr === todayStr) cls.push("today");
+      var tr = el("tr", cls.join(" "));
+      var dayTh = el("th", "mday");
+      dayTh.appendChild(el("span", "dw", DOW_SHORT[date.getDay()]));
+      dayTh.appendChild(document.createTextNode(String(d)));
+      tr.appendChild(dayTh);
+      state.team.forEach(function (n) {
+        var td = el("td", "cell");
+        td.dataset.n = n.id;
+        td.dataset.d = dstr;
+        td.tabIndex = 0;
+        paintCellContent(td);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    hint.textContent = "Choisissez une vacation en haut, puis touchez vos jours. Touchez à nouveau avec « Effacer » pour retirer.";
   }
 
   function paintCellContent(td) {
@@ -870,12 +1080,23 @@
   }
 
   var grid = document.getElementById("gridscroll");
+  /* Au doigt on peint sur le tap (événement click) et non au contact : sinon
+     un simple défilement de la liste marquerait des jours au passage. */
+  var touchTap = false;
   grid.addEventListener("pointerdown", function (e) {
     var td = e.target.closest("td.cell");
     if (!td) return;
+    if (e.pointerType === "touch") { touchTap = true; return; }
+    touchTap = false;
     if (e.button === 2) return;
     painting = true;
     applyBrush(td);
+  });
+  grid.addEventListener("click", function (e) {
+    if (!touchTap) return;
+    touchTap = false;
+    var td = e.target.closest("td.cell");
+    if (td) applyBrush(td);
   });
   grid.addEventListener("pointerover", function (e) {
     if (!painting || !(e.buttons & 1)) return;
@@ -903,6 +1124,30 @@
   });
 
   /* ---------- navigation ---------- */
+
+  /* L'en-tête du tableau se colle juste sous l'en-tête de page. */
+  function measureStick() {
+    var h = narrow.matches
+      ? Math.round(document.querySelector("header.top").getBoundingClientRect().height)
+      : 0;
+    document.documentElement.style.setProperty("--stick", h + "px");
+  }
+  window.addEventListener("resize", measureStick);
+  window.addEventListener("orientationchange", measureStick);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureStick);
+  if (window.ResizeObserver) {
+    new ResizeObserver(measureStick).observe(document.querySelector("header.top"));
+  }
+
+  var wasNarrow = narrow.matches;
+  function onWidthChange() {
+    if (narrow.matches === wasNarrow) return;
+    wasNarrow = narrow.matches;
+    measureStick();
+    renderGrid();
+  }
+  if (narrow.addEventListener) narrow.addEventListener("change", onWidthChange);
+  else if (narrow.addListener) narrow.addListener(onWidthChange);
 
   document.getElementById("year-prev").addEventListener("click", function () {
     curYear--; renderMonths(); renderGrid(); renderSums();
@@ -1146,10 +1391,44 @@
     renderTeam();
     updateSaveStatus();
   }
+  /* ---------- application installable ---------- */
+
+  if ("serviceWorker" in navigator && window.isSecureContext) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {
+        /* hors ligne indisponible : l'application reste utilisable en ligne */
+      });
+    });
+  }
+
+  /* Sur iPhone, l'installation passe par le menu Partager de Safari. */
+  (function installHint() {
+    var standalone = window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+    if (standalone || lsGet("releve.hideInstall")) return;
+    var ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (!ios) return;
+    var hint = el("p", "install-hint");
+    hint.appendChild(document.createTextNode("Pour l'ajouter à votre écran d'accueil : Partager "));
+    hint.appendChild(el("strong", null, "⎋"));
+    hint.appendChild(document.createTextNode(" puis « Sur l'écran d'accueil »."));
+    var close = el("button", "iconbtn", "✕");
+    close.style.cssText = "width:24px;height:24px;margin-left:8px;vertical-align:middle";
+    close.setAttribute("aria-label", "Masquer ce conseil");
+    close.addEventListener("click", function () {
+      lsSet("releve.hideInstall", "1");
+      hint.remove();
+    });
+    hint.appendChild(close);
+    var wrap = document.querySelector(".wrap");
+    wrap.appendChild(hint);
+  })();
+
   var seededNow = applySeed();
   if (seededNow) dirty = true;
   pickInitialYear();
   renderAll();
+  measureStick();
   if (supa) supaInit();
   if (dirty) {
     if (supa) scheduleAutosave();
@@ -1158,3 +1437,5 @@
   }
 })();
 </script>
+</body>
+</html>
