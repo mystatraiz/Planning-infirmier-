@@ -76,19 +76,40 @@ défilement ne marque jamais un jour par erreur.
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
 du planning passent toujours par le réseau, jamais par le cache.
 
-## Planning de septembre 2026
+## Plannings repris (septembre et octobre 2026)
 
-Le planning de septembre 2026 est repris du planning existant de l'équipe :
+Les plannings existants de l'équipe sont repris mois par mois, aux couleurs de
+l'équipe : **Axelle** en rouge `#E5322B`, **Chloé** en cyan `#1FC7C7`, la
+**Remplaçante** en vert `#2FB344`.
 
-| Personne | Couleur | Jours travaillés |
-| --- | --- | --- |
-| Axelle | rouge `#E5322B` | 1, 3, 7, 8, 11, 13, 16, 17, 21, 22, 25, 26, 27, 30 |
-| Chloé | cyan `#1FC7C7` | 4, 5, 6, 9, 10, 14, 15, 18, 19, 20, 24, 28, 29 |
-| Remplaçante | vert `#2FB344` | 2, 12, 23 |
+### Septembre 2026
 
-Les 30 journées du mois sont couvertes par exactement une personne. Comme pour
-le roulement, ce planning n'est appliqué qu'une seule fois (marqueur
-`planning-sept-2026`) et n'écrase jamais les modifications de l'équipe.
+| Personne | Jours travaillés |
+| --- | --- |
+| Axelle | 1, 3, 7, 8, 11, 13, 16, 17, 21, 22, 25, 26, 27, 30 |
+| Chloé | 4, 5, 6, 9, 10, 14, 15, 18, 19, 20, 24, 28, 29 |
+| Remplaçante | 2, 12, 23 |
+
+Les 30 journées sont couvertes par exactement une personne.
+
+### Octobre 2026
+
+| Personne | Jours travaillés |
+| --- | --- |
+| Axelle | 1, 5, 6, 9, 10, 11, 14, 15, 19, 20, 21, 22, 23 |
+| Chloé | 2, 3, 4, 7, 8, 12, 13, 16, 17, 18, 27, 30, 31 |
+| Remplaçante | 24, 25, 26 |
+
+Les **28 et 29 octobre** ne sont assurés par personne : ils remontent
+automatiquement dans le panneau « Jours sans personne ».
+
+### Ajouter un mois
+
+Chaque plan est une entrée de `MONTH_PLANS` dans `index.html` (identifiant,
+année, mois, et les jours travaillés par prénom). Les titulaires reçoivent un
+**Repos** les jours non travaillés ; la remplaçante n'apparaît que les jours où
+elle intervient. Un plan n'est appliqué qu'une seule fois (son identifiant est
+mémorisé dans `state.seeds`) et n'écrase jamais les modifications de l'équipe.
 « Collègue » (nom provisoire du roulement initial) devient Chloé à cette
 occasion.
 
