@@ -6,8 +6,9 @@ dans la page elle-même.
 
 ## Fonctionnalités
 
-- **Trois vues** commutables : **année**, **mois** et **semaine**, avec une
-  navigation ‹ › adaptée à la période et un bouton « Aujourd'hui ».
+- **Quatre vues** commutables : **général**, **année**, **mois** et
+  **semaine**, avec une navigation ‹ › adaptée à la période et un bouton
+  « Aujourd'hui ».
 - **Chacune gère ses jours** : sélection de son identité (« Je suis »), puis
   saisie des jours au clic ou au glisser. Clic droit pour effacer.
 - **4 statuts** : Travail, Repos, Rempla à trouver, Rempla booké. « Rempla à
@@ -22,9 +23,14 @@ dans la page elle-même.
 
 | Vue | Contenu | Navigation ‹ › |
 | --- | --- | --- |
+| **Général** | Toute l'équipe mélangée dans un calendrier mensuel : chaque journée liste les infirmières avec leur statut. Sur téléphone, jours en lignes et infirmières en colonnes. | Mois |
 | **Année** | Une infirmière à la fois, 12 calendriers mensuels (lundi → dimanche) avec un trait de couleur sous chaque jour. Cliquer un nom de mois l'ouvre en vue mois. | Année |
-| **Mois** | Toute l'équipe. Sur grand écran, infirmières en lignes et jours en colonnes ; sur téléphone, l'inverse. | Mois |
-| **Semaine** | Les 7 jours en toutes lettres, statuts écrits en clair. | Semaine |
+| **Mois** | Une infirmière à la fois, même calendrier que la vue année mais sur un seul mois, statuts écrits en clair (abrégés sur téléphone). | Mois |
+| **Semaine** | Toute l'équipe, les 7 jours en toutes lettres, statuts écrits en clair. | Semaine |
+
+Les vues **Année** et **Mois** portent une barre « Planning de » pour choisir
+l'infirmière affichée ; les vues **Général** et **Semaine** montrent toute
+l'équipe.
 
 La vue choisie est mémorisée par navigateur. Les flèches ← → du clavier
 changent aussi de période.
@@ -48,7 +54,7 @@ En dessous de 760 px, la grille bascule : les **jours deviennent les lignes** et
 les **infirmières les colonnes**, ce qui supprime tout défilement horizontal.
 L'en-tête de page et celui du tableau restent collés en haut, la barre des mois
 et les puces de statut défilent horizontalement, et les cibles tactiles font
-au moins 42 px. La vue année passe à deux calendriers par ligne. On peint au **tap** (et non au contact) pour qu'un simple
+au moins 42 px. La vue année passe à deux calendriers par ligne, et la vue Général bascule en liste (jours en lignes). On peint au **tap** (et non au contact) pour qu'un simple
 défilement ne marque jamais un jour par erreur.
 
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données

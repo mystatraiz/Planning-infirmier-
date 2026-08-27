@@ -228,42 +228,9 @@
   .empty-hint { padding: 34px 24px; text-align: center; color: var(--muted); font-size: 14.5px; }
   .hint-inline { padding: 10px 16px 12px; font-size: 12.5px; color: var(--muted); }
 
-  /* ---------- vue mois, grand écran : jours en colonnes ---------- */
+  /* ---------- calendriers mensuels : général et mois ---------- */
 
-  table.grid { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; }
-  table.grid th, table.grid td { border-bottom: 1px solid var(--line); }
-  table.grid thead th {
-    font-size: 11px; font-weight: 600; color: var(--muted); text-align: center;
-    padding: 6px 0 5px; min-width: 34px; background: var(--surface);
-    border-left: 1px solid var(--line); user-select: none;
-    font-variant-numeric: tabular-nums;
-  }
-  table.grid thead th .dow { display: block; font-size: 9.5px; letter-spacing: .04em; opacity: .8; }
-  table.grid thead th .num { display: block; font-size: 12.5px; color: var(--ink); font-weight: 700; }
-  table.grid thead th.we { background: var(--weekend); }
-  table.grid thead th.hol { background: var(--holiday); }
-  table.grid thead th.hol .num::after { content: "•"; color: var(--danger); margin-left: 2px; }
-  table.grid thead th.today .num {
-    color: var(--accent);
-    text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px;
-  }
-  th.namecol, td.namecol {
-    position: sticky; left: 0; z-index: 2; background: var(--surface);
-    text-align: left; padding: 0 14px; min-width: 150px; max-width: 210px;
-    border-right: 1px solid var(--line-strong);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  td.namecol { font-weight: 600; font-size: 13.5px; height: 40px; }
-  td.namecol .swatch {
-    display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px;
-  }
-  tr.merow td.namecol { color: var(--accent); }
-  tr.merow td.namecol::after { content: " · moi"; font-weight: 500; font-size: 11px; color: var(--muted); }
-  table.grid td.cell {
-    text-align: center; min-width: 34px; height: 40px; padding: 0;
-    border-left: 1px solid var(--line); font-size: 11.5px; font-weight: 700;
-  }
-  td.cell {
+  td.cell, .cell {
     cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation;
   }
   td.cell.we { background: var(--weekend); }
@@ -274,6 +241,69 @@
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 28px; height: 26px; border-radius: 7px; padding: 0 4px;
   }
+
+  table.gcal, table.mcal {
+    width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed;
+  }
+  table.gcal thead th, table.mcal thead th {
+    font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .05em; padding: 10px 0 8px; text-align: center;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  table.gcal thead th.wend, table.mcal thead th.wend { color: var(--line-strong); }
+  table.gcal td, table.mcal td {
+    border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    vertical-align: top; padding: 5px 5px 7px;
+  }
+  table.gcal td:last-child, table.mcal td:last-child { border-right: none; }
+  table.gcal tr:last-child td, table.mcal tr:last-child td { border-bottom: none; }
+  table.gcal td > b, table.mcal td > b {
+    display: block; text-align: right; font-size: 12.5px; font-weight: 600;
+    font-variant-numeric: tabular-nums; margin-bottom: 5px;
+  }
+  table.gcal td.out, table.mcal td.out { background: var(--surface-2); }
+  table.gcal td.out > b, table.mcal td.out > b { color: var(--line-strong); font-weight: 400; }
+  table.gcal td.hol, table.mcal td.hol { background: var(--holiday); }
+  table.gcal td.hol > b, table.mcal td.hol > b { color: var(--danger); }
+  table.gcal td.today > b, table.mcal td.today > b {
+    color: var(--accent-ink); background: var(--accent); border-radius: 999px;
+    width: 22px; height: 22px; line-height: 22px; margin-left: auto; text-align: center;
+  }
+
+  /* Vue générale : une ligne par infirmière dans chaque journée. */
+  table.gcal td { height: 104px; }
+  .gline {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 5px; border-radius: 7px; margin-bottom: 2px;
+  }
+  .gline:hover { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .gline:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .gline.mine { background: var(--accent-soft); }
+  .gdot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .gname {
+    font-size: 11.5px; font-weight: 600; flex: 1; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .gst {
+    font-size: 10px; font-weight: 700; border-radius: 5px;
+    padding: 1px 5px; min-width: 22px; text-align: center; flex: none;
+  }
+  .gst.none { color: var(--line-strong); background: transparent; }
+
+  /* Vue mois : une seule personne, statut écrit en clair. */
+  table.mcal td { height: 74px; }
+  table.mcal td i {
+    display: block; border-radius: 7px; font-style: normal;
+    font-size: 11.5px; font-weight: 700; line-height: 24px;
+    text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* Barre de choix de la personne (vues année et mois) */
+  .focusbar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 11px 16px; border-bottom: 1px solid var(--line);
+  }
+  .focusbar .control-label { margin-right: 0; }
 
   /* ---------- vue mois, petit écran : jours en lignes ---------- */
 
@@ -343,12 +373,6 @@
   table.wgrid tr:last-child th.wday, table.wgrid tr:last-child td.cell { border-bottom: none; }
 
   /* ---------- vue année : douze calendriers mensuels ---------- */
-
-  .yearbar {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding: 11px 16px; border-bottom: 1px solid var(--line);
-  }
-  .yearbar .control-label { margin-right: 0; }
 
   .ycal {
     display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -545,7 +569,7 @@
     table.wgrid td.cell { height: 56px; }
     table.wgrid td.cell span { min-width: 64px; height: 34px; font-size: 12.5px; }
 
-    .yearbar { padding: 10px 14px; }
+    .focusbar { padding: 10px 14px; }
     .ycal { gap: 18px 14px; padding: 14px 12px 4px; }
     .ymtitle { font-size: 14px; padding-bottom: 6px; }
     table.ycalt thead th { font-size: 9px; }
@@ -694,14 +718,14 @@
   var curYear = now.getFullYear();
   var curMonth = now.getMonth();
   var weekStart = mondayOf(now);
-  var view = "month";
+  var view = "general";
   var brush = "T";
   var dirty = false;
   var saving = false;
   var readOnly = false;
   var painting = false;
   var me = null;
-  var yearWho = null;
+  var focusWho = null;
 
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
@@ -712,7 +736,7 @@
   me = lsGet("releve.me");
   if (me && !state.team.some(function (n) { return n.id === me; })) me = null;
   var savedView = lsGet("releve.view");
-  if (savedView === "year" || savedView === "week" || savedView === "month") view = savedView;
+  if (["general", "year", "month", "week"].indexOf(savedView) >= 0) view = savedView;
 
   /* Modifications en attente : rejouées après un rechargement ou par-dessus une
      version plus récente du serveur, pour ne jamais perdre ce qui vient d'être saisi. */
@@ -903,10 +927,12 @@
   var narrow = window.matchMedia("(max-width: 760px)");
 
   var VIEWS = [
+    { id: "general", label: "Général" },
     { id: "year", label: "Année" },
     { id: "month", label: "Mois" },
     { id: "week", label: "Semaine" }
   ];
+  var MONTH_VIEWS = { general: 1, month: 1 };   // vues cadrées sur un mois
 
   function renderViewSwitch() {
     var box = document.getElementById("viewswitch");
@@ -939,7 +965,7 @@
 
   function periodLabel() {
     if (view === "year") return String(curYear);
-    if (view === "month") return MONTHS[curMonth] + " " + curYear;
+    if (MONTH_VIEWS[view]) return MONTHS[curMonth] + " " + curYear;
     var end = addDays(weekStart, 6);
     var a = weekStart.getDate(), b = end.getDate();
     if (weekStart.getMonth() === end.getMonth()) {
@@ -951,12 +977,12 @@
 
   function renderPeriod() {
     document.getElementById("period-label").textContent = periodLabel();
-    document.getElementById("months").hidden = view !== "month";
+    document.getElementById("months").hidden = !MONTH_VIEWS[view];
   }
 
   function shiftPeriod(dir) {
     if (view === "year") curYear += dir;
-    else if (view === "month") {
+    else if (MONTH_VIEWS[view]) {
       curMonth += dir;
       if (curMonth > 11) { curMonth = 0; curYear++; }
       if (curMonth < 0) { curMonth = 11; curYear--; }
@@ -1018,7 +1044,7 @@
       c.addEventListener("click", function () {
         me = (me === n.id) ? null : n.id;
         lsSet("releve.me", me || "");
-        if (me) yearWho = me;
+        if (me) focusWho = me;
         renderIdentity();
         renderGrid();
       });
@@ -1055,10 +1081,20 @@
   function paintCellContent(td) {
     var code = entryOf(td.dataset.n, td.dataset.d);
     var t = code ? typeById(code) : null;
+    if (td.classList.contains("gline")) {
+      var st = td.querySelector(".gst");
+      st.className = "gst " + (t ? "s-" + code : "none");
+      st.textContent = t ? t.glyph : "–";
+      td.title = t ? t.label : "Aucun statut";
+      return;
+    }
     if (td.dataset.cal === "1") {
       var bar = td.querySelector("i");
       if (!bar) { bar = el("i"); td.appendChild(bar); }
       bar.className = t ? "s-" + code : "";
+      // label "1" = statut écrit en toutes lettres, "0" = abrégé, absent = trait seul
+      var lab = td.dataset.label;
+      bar.textContent = t ? (lab === "1" ? t.label : (lab === "0" ? t.glyph : "")) : "";
       td.title = t ? t.label : "";
       return;
     }
@@ -1084,57 +1120,137 @@
     }
     if (view === "year") renderYear(top, scroll, hint);
     else if (view === "week") renderWeek(scroll, hint);
+    else if (view === "month") renderMonthCalendar(top, scroll, hint);
     else if (narrow.matches) renderMonthNarrow(scroll, hint);
-    else renderMonthWide(scroll, hint);
+    else renderGeneralCalendar(scroll, hint);
   }
 
-  /* Vue mois, grand écran : infirmières en lignes, jours en colonnes. */
-  function renderMonthWide(scroll, hint) {
-    var nd = daysInMonth(curYear, curMonth);
-    var hols = holidays(curYear);
-    var today = todayStr();
-
-    var table = el("table", "grid");
-    var thead = el("thead");
-    var hr = el("tr");
-    hr.appendChild(el("th", "namecol", MONTHS[curMonth] + " " + curYear));
-    for (var d = 1; d <= nd; d++) {
-      var date = new Date(curYear, curMonth, d);
-      var dstr = fmt(curYear, curMonth, d);
-      var cls = [];
-      if (date.getDay() === 0 || date.getDay() === 6) cls.push("we");
-      if (hols[dstr]) cls.push("hol");
-      if (dstr === today) cls.push("today");
-      var th = el("th", cls.join(" "));
-      th.appendChild(el("span", "dow", DOW[date.getDay()]));
-      th.appendChild(el("span", "num", String(d)));
-      hr.appendChild(th);
+  /* Barre de choix de la personne affichée (vues année et mois). */
+  function focusBar(top, label) {
+    if (!focusWho || !state.team.some(function (n) { return n.id === focusWho; })) {
+      focusWho = me || state.team[0].id;
     }
-    thead.appendChild(hr);
-    table.appendChild(thead);
-
-    var tbody = el("tbody");
+    var bar = el("div", "focusbar");
+    bar.appendChild(el("span", "control-label", label));
     state.team.forEach(function (n) {
-      var tr = el("tr", me === n.id ? "merow" : "");
-      var nameTd = el("td", "namecol");
+      var c = el("button", "chip" + (focusWho === n.id ? " on" : ""));
       var sw = el("span", "swatch");
       sw.style.background = n.color;
-      nameTd.appendChild(sw);
-      nameTd.appendChild(document.createTextNode(n.name));
-      tr.appendChild(nameTd);
-      for (var d = 1; d <= nd; d++) {
-        var dstr = fmt(curYear, curMonth, d);
-        var date = new Date(curYear, curMonth, d);
-        var cls = [];
-        if (date.getDay() === 0 || date.getDay() === 6) cls.push("we");
-        if (hols[dstr]) cls.push("hol");
-        tr.appendChild(makeCell(n.id, dstr, cls.join(" ")));
+      c.appendChild(sw);
+      c.appendChild(document.createTextNode(n.name));
+      c.addEventListener("click", function () { focusWho = n.id; renderGrid(); });
+      bar.appendChild(c);
+    });
+    top.appendChild(bar);
+  }
+
+  /* Semaines d'un mois, du lundi précédant le 1er au dimanche suivant le dernier. */
+  function monthWeeks(y, m) {
+    var start = mondayOf(new Date(y, m, 1));
+    var last = new Date(y, m, daysInMonth(y, m));
+    var weeks = Math.round((dayIndex(mondayOf(last)) - dayIndex(start)) / 7) + 1;
+    return { start: start, weeks: weeks };
+  }
+
+  function weekdayHead(table) {
+    var thead = el("thead");
+    var hr = el("tr");
+    ["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."].forEach(function (d, i) {
+      hr.appendChild(el("th", i >= 5 ? "wend" : null, d));
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+  }
+
+  /* Classes communes d'une journée de calendrier. */
+  function dayClasses(date, m, hols, today) {
+    var y = date.getFullYear(), mo = date.getMonth(), d = date.getDate();
+    var dstr = fmt(y, mo, d);
+    var inMonth = (mo === m && y === curYear);
+    var cls = [];
+    if (!inMonth) cls.push("out");
+    else {
+      if (hols(y)[dstr]) cls.push("hol");
+      if (dstr === today) cls.push("today");
+    }
+    return { dstr: dstr, day: d, inMonth: inMonth, cls: cls };
+  }
+
+  /* Vue générale : toute l'équipe mélangée dans un calendrier mensuel. */
+  function renderGeneralCalendar(scroll, hint) {
+    var today = todayStr();
+    var hols = holidays;
+    var w = monthWeeks(curYear, curMonth);
+    var table = el("table", "gcal");
+    weekdayHead(table);
+    var tbody = el("tbody");
+    for (var i = 0; i < w.weeks; i++) {
+      var tr = el("tr");
+      for (var k = 0; k < 7; k++) {
+        var date = addDays(w.start, i * 7 + k);
+        var info = dayClasses(date, curMonth, hols, today);
+        var td = el("td", info.cls.join(" "));
+        td.appendChild(el("b", null, String(info.day)));
+        if (info.inMonth) {
+          (function (dstr) {
+            state.team.forEach(function (n) {
+              var line = el("div", "cell gline" + (me === n.id ? " mine" : ""));
+              line.dataset.n = n.id;
+              line.dataset.d = dstr;
+              line.tabIndex = 0;
+              var dot = el("span", "gdot");
+              dot.style.background = n.color;
+              line.appendChild(dot);
+              line.appendChild(el("span", "gname", n.name));
+              line.appendChild(el("span", "gst"));
+              paintCellContent(line);
+              td.appendChild(line);
+            });
+          })(info.dstr);
+        }
+        tr.appendChild(td);
       }
       tbody.appendChild(tr);
-    });
+    }
     table.appendChild(tbody);
     scroll.appendChild(table);
-    hint.textContent = "Choisissez un statut puis cliquez (ou glissez) sur les jours. Clic droit : effacer. Le point rouge marque les jours fériés.";
+    hint.textContent = "Toute l'équipe sur le mois. Choisissez un statut puis cliquez sur la ligne d'une personne pour le lui appliquer.";
+  }
+
+  /* Vue mois : une seule personne, calendrier mensuel avec statuts en clair. */
+  function renderMonthCalendar(top, scroll, hint) {
+    focusBar(top, "Planning de");
+    var today = todayStr();
+    var hols = holidays;
+    var w = monthWeeks(curYear, curMonth);
+    var table = el("table", "mcal");
+    weekdayHead(table);
+    var tbody = el("tbody");
+    for (var i = 0; i < w.weeks; i++) {
+      var tr = el("tr");
+      for (var k = 0; k < 7; k++) {
+        var date = addDays(w.start, i * 7 + k);
+        var info = dayClasses(date, curMonth, hols, today);
+        var cls = info.cls.slice();
+        if (info.inMonth) cls.push("cell");
+        var td = el("td", cls.join(" "));
+        td.appendChild(el("b", null, String(info.day)));
+        td.appendChild(el("i"));
+        td.dataset.cal = "1";
+        td.dataset.label = narrow.matches ? "0" : "1";
+        if (info.inMonth) {
+          td.dataset.n = focusWho;
+          td.dataset.d = info.dstr;
+          td.tabIndex = 0;
+        }
+        paintCellContent(td);
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    scroll.appendChild(table);
+    hint.textContent = "Choisissez un statut puis touchez les jours. Changez de personne avec les onglets ci-dessus.";
   }
 
   /* Vue mois, petit écran : jours en lignes, infirmières en colonnes. */
@@ -1237,31 +1353,10 @@
   /* Vue année : douze calendriers mensuels, un trait de couleur sous chaque
      jour. Une infirmière à la fois, choisie par les onglets. */
   function renderYear(top, scroll, hint) {
-    if (!yearWho || !state.team.some(function (n) { return n.id === yearWho; })) {
-      yearWho = me || state.team[0].id;
-    }
-    var bar = el("div", "yearbar");
-    bar.appendChild(el("span", "control-label", "Année de"));
-    state.team.forEach(function (n) {
-      var c = el("button", "chip" + (yearWho === n.id ? " on" : ""));
-      var sw = el("span", "swatch");
-      sw.style.background = n.color;
-      c.appendChild(sw);
-      c.appendChild(document.createTextNode(n.name));
-      c.addEventListener("click", function () { yearWho = n.id; renderGrid(); });
-      bar.appendChild(c);
-    });
-    top.appendChild(bar);
-
-    var hols = holidays(curYear);
-    var holsPrev = holidays(curYear - 1);
-    var holsNext = holidays(curYear + 1);
+    focusBar(top, "Année de");
     var today = todayStr();
     var cal = el("div", "ycal");
-
-    for (var m = 0; m < 12; m++) {
-      cal.appendChild(monthCard(m, hols, holsPrev, holsNext, today));
-    }
+    for (var m = 0; m < 12; m++) cal.appendChild(monthCard(m, today));
     scroll.appendChild(cal);
 
     var legend = el("div", "ylegend");
@@ -1279,7 +1374,7 @@
     return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
   }
 
-  function monthCard(m, hols, holsPrev, holsNext, today) {
+  function monthCard(m, today) {
     var card = el("div", "ymcard");
     var title = el("button", "ymtitle", MONTHS[m] + " " + curYear);
     title.title = "Ouvrir " + MONTHS[m] + " en détail";
@@ -1287,50 +1382,26 @@
     card.appendChild(title);
 
     var table = el("table", "ycalt");
-    var thead = el("thead");
-    var hr = el("tr");
-    ["Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.", "Dim."].forEach(function (d, i) {
-      hr.appendChild(el("th", i >= 5 ? "wend" : null, d));
-    });
-    thead.appendChild(hr);
-    table.appendChild(thead);
-
-    var first = new Date(curYear, m, 1);
-    var last = new Date(curYear, m, daysInMonth(curYear, m));
-    var start = mondayOf(first);
-    var weeks = Math.round((dayIndex(mondayOf(last)) - dayIndex(start)) / 7) + 1;
-
+    weekdayHead(table);
+    var w = monthWeeks(curYear, m);
     var tbody = el("tbody");
-    for (var w = 0; w < weeks; w++) {
+    for (var i = 0; i < w.weeks; i++) {
       var tr = el("tr");
       for (var k = 0; k < 7; k++) {
-        var date = addDays(start, w * 7 + k);
-        var y = date.getFullYear(), mo = date.getMonth(), d = date.getDate();
-        var dstr = fmt(y, mo, d);
-        var inMonth = (mo === m && y === curYear);
-        var holsFor = y < curYear ? holsPrev : (y > curYear ? holsNext : hols);
-        var cls = [];
-        if (!inMonth) cls.push("out");
-        else {
-          cls.push("cell");
-          if (holsFor[dstr]) cls.push("hol");
-          if (dstr === today) cls.push("today");
-        }
+        var date = addDays(w.start, i * 7 + k);
+        var info = dayClasses(date, m, holidays, today);
+        var cls = info.cls.slice();
+        if (info.inMonth) cls.push("cell");
         var td = el("td", cls.join(" "));
-        td.appendChild(el("b", null, String(d)));
+        td.appendChild(el("b", null, String(info.day)));
         td.appendChild(el("i"));
         td.dataset.cal = "1";
-        if (inMonth) {
-          td.dataset.n = yearWho;
-          td.dataset.d = dstr;
-          td.tabIndex = 0;
-        } else {
-          // Les jours du mois voisin restent visibles, en retrait et non modifiables.
-          td.dataset.n = yearWho;
-          td.dataset.d = dstr;
-        }
+        // Les jours des mois voisins gardent leur trait, en retrait, sans être modifiables.
+        td.dataset.n = focusWho;
+        td.dataset.d = info.dstr;
+        if (info.inMonth) td.tabIndex = 0;
         paintCellContent(td);
-        if (!inMonth) { delete td.dataset.n; }
+        if (!info.inMonth) delete td.dataset.n;
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
@@ -1364,7 +1435,7 @@
     if (view === "year") {
       return { from: fmt(curYear, 0, 1), to: fmt(curYear, 11, 31), title: "Année " + curYear };
     }
-    if (view === "month") {
+    if (MONTH_VIEWS[view]) {
       return {
         from: fmt(curYear, curMonth, 1),
         to: fmt(curYear, curMonth, daysInMonth(curYear, curMonth)),
@@ -1473,7 +1544,7 @@
         state.team = state.team.filter(function (x) { return x.id !== n.id; });
         delete state.entries[n.id];
         if (me === n.id) { me = null; lsSet("releve.me", ""); }
-        if (yearWho === n.id) yearWho = null;
+        if (focusWho === n.id) focusWho = null;
         markDirty();
         renderAll();
       });
@@ -1527,7 +1598,7 @@
     clearTimeout(sumTimer);
     sumTimer = setTimeout(function () {
       renderSums();
-      if (view === "month") renderMonths();
+      if (MONTH_VIEWS[view]) renderMonths();
     }, 250);
   }
 
@@ -1537,7 +1608,7 @@
      un simple défilement de la liste marquerait des jours au passage. */
   var touchTap = false;
   grid.addEventListener("pointerdown", function (e) {
-    var td = e.target.closest("td.cell");
+    var td = e.target.closest(".cell");
     if (!td) return;
     if (e.pointerType === "touch") { touchTap = true; return; }
     touchTap = false;
@@ -1548,17 +1619,17 @@
   grid.addEventListener("click", function (e) {
     if (!touchTap) return;
     touchTap = false;
-    var td = e.target.closest("td.cell");
+    var td = e.target.closest(".cell");
     if (td) applyBrush(td);
   });
   grid.addEventListener("pointerover", function (e) {
     if (!painting || !(e.buttons & 1)) return;
-    var td = e.target.closest("td.cell");
+    var td = e.target.closest(".cell");
     if (td) applyBrush(td);
   });
   window.addEventListener("pointerup", function () { painting = false; });
   grid.addEventListener("contextmenu", function (e) {
-    var td = e.target.closest("td.cell");
+    var td = e.target.closest(".cell");
     if (!td) return;
     e.preventDefault();
     var old = brush;
@@ -1567,7 +1638,7 @@
     brush = old;
   });
   grid.addEventListener("keydown", function (e) {
-    var td = e.target.closest("td.cell");
+    var td = e.target.closest(".cell");
     if (!td) return;
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); applyBrush(td); }
     if (e.key === "Delete" || e.key === "Backspace") {
