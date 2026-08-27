@@ -1,13 +1,8 @@
-/* Synchronisation de l'équipe — à renseigner une fois le projet Supabase créé.
-   1. Créez un projet gratuit sur https://supabase.com
-   2. Dans "SQL Editor", exécutez le contenu du fichier supabase.sql
-   3. Dans "Project Settings → API", copiez "Project URL" et la clé "anon public"
-   4. Décommentez et remplissez les deux lignes ci-dessous, puis poussez le fichier.
+/* Synchronisation de l'équipe via Supabase.
+   La clé "anon public" est conçue pour être publiée ; l'accès aux données
+   est régi par les politiques RLS définies dans supabase.sql. */
 
-   Tant que ce fichier n'est pas rempli, la page fonctionne en mode local
-   (les modifications ne sont pas partagées entre navigateurs). */
-
-// window.RELEVE_CONFIG = {
-//   supabaseUrl: "https://VOTRE-PROJET.supabase.co",
-//   supabaseKey: "VOTRE-CLE-ANON-PUBLIC"
-// };
+window.RELEVE_CONFIG = {
+  supabaseUrl: "https://okwavcihdkchlebldahc.supabase.co",
+  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rd2F2Y2loZGtjaGxlYmxkYWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MjAxNDAsImV4cCI6MjEwMzM5NjE0MH0.Lpvd3amfiNEDsnDD-AIoRbikqCtXkxEXkvvcS3Fqp9M"
+};
