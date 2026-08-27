@@ -19,7 +19,7 @@ dans la page elle-même.
   Ascension, Pentecôte) et signalés dans la grille.
 - **Gestion d'équipe** : ajout, renommage, couleur et retrait des membres.
 
-## Les trois vues
+## Les quatre vues
 
 | Vue | Contenu | Navigation ‹ › |
 | --- | --- | --- |
@@ -54,8 +54,9 @@ En dessous de 760 px, la grille bascule : les **jours deviennent les lignes** et
 les **infirmières les colonnes**, ce qui supprime tout défilement horizontal.
 L'en-tête de page et celui du tableau restent collés en haut, la barre des mois
 et les puces de statut défilent horizontalement, et les cibles tactiles font
-au moins 42 px. La vue année passe à deux calendriers par ligne, et la vue Général bascule en liste (jours en lignes). On peint au **tap** (et non au contact) pour qu'un simple
-défilement ne marque jamais un jour par erreur.
+au moins 42 px. La vue année passe à deux calendriers par ligne et la vue
+Général bascule en liste (jours en lignes). On peint au **tap** (et non au
+contact) pour qu'un simple défilement ne marque jamais un jour par erreur.
 
 Le service worker (`sw.js`) garde la page ouvrable hors connexion ; les données
 du planning passent toujours par le réseau, jamais par le cache.
